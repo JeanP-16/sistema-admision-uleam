@@ -88,7 +88,7 @@ class PoliticaAccionAfirmativa:
         self.segmento_asignado = None
         self.prioridad_segmento = 99  # Menor número = mayor prioridad
         
-        print(f"✅ PAA creada para postulante ID: {id_postulante}")
+        print(f" PAA creada para postulante ID: {id_postulante}")
     
     def marcar_cupo_historico(self, tiene_cupo: bool, activo: bool = False):
         """Marca si tiene cupo aceptado histórico."""
@@ -96,7 +96,7 @@ class PoliticaAccionAfirmativa:
         self.cupo_historico_activo = 'SI' if activo else 'NO'
         if activo:
             self.numero_cupos_activos += 1
-        print(f"📋 Cupo histórico: {self.cupo_aceptado_historico_pc}")
+        print(f" Cupo histórico: {self.cupo_aceptado_historico_pc}")
     
     def aplicar_condicion_socioeconomica(self, quintil: int):
         """
@@ -110,28 +110,28 @@ class PoliticaAccionAfirmativa:
             
             if quintil == 1:  # Quintil 1 = pobreza extrema
                 self.vulnerabilidad_socioeconomica = 'SI'
-                print(f"🏚️ Vulnerabilidad socioeconómica detectada (Quintil {quintil})")
+                print(f" Vulnerabilidad socioeconómica detectada (Quintil {quintil})")
         
-        print(f"💰 Condición socioeconómica: Quintil {quintil}")
+        print(f" Condición socioeconómica: Quintil {quintil}")
     
     def aplicar_ruralidad(self, tipo_institucion: str, zona: str):
         """Aplica si estudió en zona rural."""
         if tipo_institucion == 'FISCAL' and zona.upper() == 'RURAL':
             self.ruralidad = 'SI'
-            print(f"🌾 Ruralidad aplicada")
+            print(f" Ruralidad aplicada")
     
     def aplicar_discapacidad(self, porcentaje: int, tiene_carnet: bool):
         """Aplica si tiene discapacidad >= 30%."""
         if tiene_carnet and porcentaje >= 30:
             self.discapacidad = 'SI'
-            print(f"♿ Discapacidad aplicada: {porcentaje}%")
+            print(f" Discapacidad aplicada: {porcentaje}%")
     
     def aplicar_pueblos_nacionalidades(self, autoidentificacion: str):
         """Aplica si pertenece a pueblos y nacionalidades."""
         PUEBLOS = ['INDIGENA', 'AFROECUATORIANO', 'MONTUBIO', 'AFRODESCENDIENTE']
         if autoidentificacion.upper() in PUEBLOS:
             self.pueblos_nacionalidades = 'SI'
-            print(f"🌍 Pueblos y nacionalidades: {autoidentificacion}")
+            print(f" Pueblos y nacionalidades: {autoidentificacion}")
     
     def aplicar_merito_academico(self, cuadro_honor: str, distincion: str = None):
         """Aplica si fue abanderado o escolta."""
@@ -145,7 +145,7 @@ class PoliticaAccionAfirmativa:
             ]
             if distincion and distincion in DISTINCIONES_MERITO:
                 self.merito_academico = 'SI'
-                print(f"🏆 Mérito académico: {distincion}")
+                print(f" Mérito académico: {distincion}")
     
     def aplicar_bachiller_ultimo_anio(self, es_bachiller: bool, 
                                      pertenece_pueblos: bool = False):
@@ -155,9 +155,9 @@ class PoliticaAccionAfirmativa:
             
             if pertenece_pueblos:
                 self.bachiller_pueblos_nacionalidad = 'SI'
-                print(f"🎓 Bachiller de pueblos y nacionalidades")
+                print(f" Bachiller de pueblos y nacionalidades")
             else:
-                print(f"🎓 Bachiller último año")
+                print(f" Bachiller último año")
     
     def calcular_segmento(self) -> str:
         """
@@ -183,41 +183,41 @@ class PoliticaAccionAfirmativa:
             if tiene_paa:
                 self.segmento_asignado = 'CUOTAS'
                 self.prioridad_segmento = 1
-                print(f"🎯 Segmento: CUOTAS (Prioridad 1)")
+                print(f" Segmento: CUOTAS (Prioridad 1)")
                 return self.segmento_asignado
         
         # 2. VULNERABILIDAD SOCIOECONÓMICA
         if self.vulnerabilidad_socioeconomica == 'SI':
             self.segmento_asignado = 'VULNERABILIDAD'
             self.prioridad_segmento = 2
-            print(f"🎯 Segmento: VULNERABILIDAD (Prioridad 2)")
+            print(f" Segmento: VULNERABILIDAD (Prioridad 2)")
             return self.segmento_asignado
         
         # 3. MÉRITO ACADÉMICO
         if self.merito_academico == 'SI':
             self.segmento_asignado = 'MERITO_ACADEMICO'
             self.prioridad_segmento = 3
-            print(f"🎯 Segmento: MÉRITO ACADÉMICO (Prioridad 3)")
+            print(f" Segmento: MÉRITO ACADÉMICO (Prioridad 3)")
             return self.segmento_asignado
         
         # 5. PUEBLOS Y NACIONALIDADES (bachilleres)
         if self.bachiller_pueblos_nacionalidad == 'SI':
             self.segmento_asignado = 'PUEBLOS_NACIONALIDADES'
             self.prioridad_segmento = 5
-            print(f"🎯 Segmento: PUEBLOS Y NACIONALIDADES (Prioridad 5)")
+            print(f" Segmento: PUEBLOS Y NACIONALIDADES (Prioridad 5)")
             return self.segmento_asignado
         
         # 6. BACHILLERES ÚLTIMO AÑO
         if self.bachiller_periodo_academico == 'SI':
             self.segmento_asignado = 'BACHILLERES'
             self.prioridad_segmento = 6
-            print(f"🎯 Segmento: BACHILLERES (Prioridad 6)")
+            print(f" Segmento: BACHILLERES (Prioridad 6)")
             return self.segmento_asignado
         
         # 7. POBLACIÓN GENERAL
         self.segmento_asignado = 'GENERAL'
         self.prioridad_segmento = 7
-        print(f"🎯 Segmento: POBLACIÓN GENERAL (Prioridad 7)")
+        print(f" Segmento: POBLACIÓN GENERAL (Prioridad 7)")
         return self.segmento_asignado
     
     def obtener_resumen(self) -> dict:
@@ -253,7 +253,7 @@ if __name__ == "__main__":
     print("=" * 70)
     
     # CASO 1: Estudiante con mérito académico
-    print("\n🏆 CASO 1: Estudiante con mérito académico")
+    print("\n CASO 1: Estudiante con mérito académico")
     print("-" * 70)
     
     paa1 = PoliticaAccionAfirmativa(
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     print(f"\nResumen: {paa1.obtener_resumen()}")
     
     # CASO 2: Estudiante con vulnerabilidad
-    print("\n\n🏚️ CASO 2: Estudiante con vulnerabilidad socioeconómica")
+    print("\n\n CASO 2: Estudiante con vulnerabilidad socioeconómica")
     print("-" * 70)
     
     paa2 = PoliticaAccionAfirmativa(
@@ -297,5 +297,5 @@ if __name__ == "__main__":
     paa3.calcular_segmento()
     print(f"\nResumen: {paa3.obtener_resumen()}")
     
-    print(f"\n📊 Total PAA creadas: {PoliticaAccionAfirmativa.obtener_total()}")
+    print(f"\n Total PAA creadas: {PoliticaAccionAfirmativa.obtener_total()}")
     print("\n" + "=" * 70)
