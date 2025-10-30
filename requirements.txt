@@ -1,33 +1,14 @@
-# Dependencias del Sistema de Admisión ULEAM
+# Sistema de Admisión ULEAM
+# Dependencias del proyecto
+# Autor: Jean Pierre Flores Piloso, Braddy Londre, Bismark Cevallos
+# Fecha: Octubre 2025
 
-# Testing
-pytest==7.4.3
-pytest-cov==4.1.0
+# Core dependencies
+python-dateutil>=2.8.2
 
-# Validación de datos
-pydantic==2.5.0
-
-# Utilidades de fecha
-python-dateutil==2.8.2
-
-# Para generar PDFs (certificados)
-reportlab==4.0.7
-
-# Para manejo de JSON
-jsonschema==4.20.0
-
-# Para logs estructurados
-python-json-logger==2.0.7
-
-# Base de datos (si usas SQLite)
-# sqlite3 viene incluido en Python
-
-# Para variables de entorno
-python-dotenv==1.0.0
-
-# Para formateo de código (desarrollo)
-black==23.12.0
-flake8==6.1.0
-
-# Documentación
-sphinx==7.2.6
+# Future dependencies (comentadas por ahora)
+# Flask>=3.0.0              # Para interfaz web (Fase 2)
+# Flask-SQLAlchemy>=3.0.0   # Para base de datos (Fase 2)
+# reportlab>=4.0.0          # Para generar PDFs (Fase 2)
+# pytest>=7.4.0             # Para testing avanzado (Fase 2)
+# requests>=2.31.0          # Para APIs externas (Fase 3)
