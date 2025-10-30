@@ -2,89 +2,93 @@
 Módulo: PoliticaAccionAfirmativa (PAA)
 Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
 Fecha: Octubre 2025
-Descripción: Gestiona las Políticas de Acción Afirmativa según SENESCYT
-Basado en: cgtic-ddpti-2025-m-002 (Servicio Web PAA y Orden de Asignación)
+Descripción:
+    Gestiona las Políticas de Acción Afirmativa (PAA) según SENESCYT 2025.
+    Incluye herencia múltiple, abstracción y polimorfismo.
 """
 
-from typing import Optional
+from abc import ABC, abstractmethod
+from typing import Optional, Dict
 
 
-class PoliticaAccionAfirmativa:
+# ==============================
+# CLASES BASE ABSTRACTAS
+# ==============================
+
+class EvaluacionSocial(ABC):
+    """Clase abstracta base para representar condiciones sociales de los postulantes."""
+
+    @abstractmethod
+    def aplicar_condicion_socioeconomica(self, quintil: int):
+        pass
+
+    @abstractmethod
+    def aplicar_ruralidad(self, tipo_institucion: str, zona: str):
+        pass
+
+    @abstractmethod
+    def aplicar_discapacidad(self, porcentaje: int, tiene_carnet: bool):
+        pass
+
+
+class SegmentacionAsignacion(ABC):
+    """Clase abstracta base que define el cálculo de segmento y priorización."""
+
+    @abstractmethod
+    def calcular_segmento(self) -> str:
+        pass
+
+    @abstractmethod
+    def obtener_resumen(self) -> Dict:
+        pass
+
+
+# ==============================
+# CLASE PRINCIPAL CON HERENCIA MÚLTIPLE
+# ==============================
+
+class PoliticaAccionAfirmativa(EvaluacionSocial, SegmentacionAsignacion):
     """
-    Gestiona las Políticas de Acción Afirmativa (PAA) y Orden de Asignación.
-    
-    Según SENESCYT 2025:
-    - Marcaciones de Estado (ME)
-    - Políticas de Acción Afirmativa (PAA)
-    - Orden de Asignación (OA)
-    
-    Attributes:
-        Marcaciones de Estado
-        Políticas de Acción Afirmativa
-        Orden de Asignación
-        Segmento asignado
+    Clase principal que combina EvaluacionSocial + SegmentacionAsignacion.
+    Gestiona las Políticas de Acción Afirmativa (PAA) con base en la normativa SENESCYT 2025.
     """
-    
-    # Contador
+
     _contador = 0
-    
-    # === ORDEN OBLIGATORIO DE SEGMENTOS (Art. SENESCYT) ===
+
     ORDEN_SEGMENTOS = [
-        'CUOTAS',                      # 1. Política de cuotas (5-10%)
-        'VULNERABILIDAD',              # 2. Mayor vulnerabilidad socioeconómica
-        'MERITO_ACADEMICO',            # 3. Mérito académico (abanderados/escoltas)
-        'RECONOCIMIENTOS',             # 4. Otros reconocimientos
-        'PUEBLOS_NACIONALIDADES',      # 5. Pueblos y nacionalidades
-        'BACHILLERES',                 # 6. Bachilleres último régimen
-        'GENERAL'                      # 7. Población general
+        'CUOTAS',
+        'VULNERABILIDAD',
+        'MERITO_ACADEMICO',
+        'RECONOCIMIENTOS',
+        'PUEBLOS_NACIONALIDADES',
+        'BACHILLERES',
+        'GENERAL'
     ]
-    
+
     def __init__(self, id_postulante: int, identificacion: str):
-        """
-        Inicializa las políticas para un postulante.
-        
-        Args:
-            id_postulante: ID del postulante
-            identificacion: Cédula del postulante
-        """
         PoliticaAccionAfirmativa._contador += 1
-        
         self.id_postulante = id_postulante
         self.identificacion = identificacion
-        
-        # === MARCACIONES DE ESTADO (ME) ===
+
+        # Marcaciones iniciales
         self.cupo_aceptado_historico_pc = 'NO'
-        self.anulacion_matricula_niv_carr = 'NO'
-        self.periodo_sancion = None
         self.cupo_historico_activo = 'NO'
         self.numero_cupos_activos = 0
-        self.cupo_pendiente_registro = 'NO'
-        self.aspirante_focalizado = 'NO'
-        self.tiene_puntaje_eval_4_periodos = 'NO'
-        self.puntaje_mayor_eval = 0
-        self.bachiller_artes = 'NO'
-        
-        # === POLÍTICAS DE ACCIÓN AFIRMATIVA (PAA) ===
-        self.condicion_socioeconomica = 'NO'         # Pobreza (Registro Social)
-        self.ruralidad = 'NO'                        # Estudió en zona rural
-        self.territorialidad = 'NO'                  # Parroquia con índice de pobreza
-        self.discapacidad = 'NO'                     # Discapacidad >= 30%
-        self.bono_jgl = 'NO'                         # Bono Joaquín Gallegos Lara
-        self.victima_violencia = 'NO'                # Víctima violencia sexual/género
-        self.migrantes_retornados = 'NO'             # Migrante/retornado
-        self.femicidio = 'NO'                        # Víctima femicidio
-        self.enfermedades_catastroficas = 'NO'       # Enfermedades catastróficas
-        self.casa_acogida = 'NO'                     # Ex casa de acogida
-        self.pueblos_nacionalidades = 'NO'           # Pueblos y nacionalidades
-        
-        # === ORDEN DE ASIGNACIÓN (OA) ===
-        self.vulnerabilidad_socioeconomica = 'NO'    # Pobreza extrema
-        self.merito_academico = 'NO'                 # Abanderado/escolta
-        self.bachiller_pueblos_nacionalidad = 'NO'   # Bachiller de pueblos
-        self.bachiller_periodo_academico = 'NO'      # Bachiller último año
-        self.poblacion_general = 'SI'                # Todos califican aquí
-        
-        # === SEGMENTO ASIGNADO ===
+
+        # Condiciones sociales
+        self.condicion_socioeconomica = 'NO'
+        self.ruralidad = 'NO'
+        self.discapacidad = 'NO'
+        self.pueblos_nacionalidades = 'NO'
+        self.victima_violencia = 'NO'
+        self.migrantes_retornados = 'NO'
+        self.merito_academico = 'NO'
+        self.vulnerabilidad_socioeconomica = 'NO'
+        self.bachiller_pueblos_nacionalidad = 'NO'
+        self.bachiller_periodo_academico = 'NO'
+        self.poblacion_general = 'SI'
+
+        # Segmento asignado
         self.segmento_asignado = None
         self.prioridad_segmento = 99  # Menor número = mayor prioridad
         
@@ -99,16 +103,10 @@ class PoliticaAccionAfirmativa:
         print(f" Cupo histórico: {self.cupo_aceptado_historico_pc}")
     
     def aplicar_condicion_socioeconomica(self, quintil: int):
-        """
-        Aplica condición socioeconómica según Registro Social.
-        
-        Args:
-            quintil: Quintil del Registro Social (1-5)
-        """
-        if quintil <= 2:  # Quintil 1 o 2 = pobreza
+        """Aplica condición socioeconómica según Registro Social."""
+        if quintil <= 2:
             self.condicion_socioeconomica = 'SI'
-            
-            if quintil == 1:  # Quintil 1 = pobreza extrema
+            if quintil == 1:
                 self.vulnerabilidad_socioeconomica = 'SI'
                 print(f" Vulnerabilidad socioeconómica detectada (Quintil {quintil})")
         
@@ -116,20 +114,20 @@ class PoliticaAccionAfirmativa:
     
     def aplicar_ruralidad(self, tipo_institucion: str, zona: str):
         """Aplica si estudió en zona rural."""
-        if tipo_institucion == 'FISCAL' and zona.upper() == 'RURAL':
+        if tipo_institucion.upper() == 'FISCAL' and zona.upper() == 'RURAL':
             self.ruralidad = 'SI'
             print(f" Ruralidad aplicada")
     
     def aplicar_discapacidad(self, porcentaje: int, tiene_carnet: bool):
-        """Aplica si tiene discapacidad >= 30%."""
+        """Aplica si tiene discapacidad ≥ 30%."""
         if tiene_carnet and porcentaje >= 30:
             self.discapacidad = 'SI'
             print(f" Discapacidad aplicada: {porcentaje}%")
     
     def aplicar_pueblos_nacionalidades(self, autoidentificacion: str):
-        """Aplica si pertenece a pueblos y nacionalidades."""
-        PUEBLOS = ['INDIGENA', 'AFROECUATORIANO', 'MONTUBIO', 'AFRODESCENDIENTE']
-        if autoidentificacion.upper() in PUEBLOS:
+        """Aplica si pertenece a pueblos o nacionalidades reconocidos."""
+        grupos = ['INDIGENA', 'AFROECUATORIANO', 'MONTUBIO']
+        if autoidentificacion.upper() in grupos:
             self.pueblos_nacionalidades = 'SI'
             print(f" Pueblos y nacionalidades: {autoidentificacion}")
     
@@ -138,12 +136,10 @@ class PoliticaAccionAfirmativa:
         if cuadro_honor == 'SI':
             DISTINCIONES_MERITO = [
                 'ABANDERADO PABELLON NACIONAL',
-                'PORTA ESTANDARTE CIUDAD',
                 'PORTA ESTANDARTE PLANTEL',
-                '1er. ESCOLTA PABELLON NACIONAL',
-                '2do. ESCOLTA PABELLON NACIONAL'
+                '1er. ESCOLTA PABELLON NACIONAL'
             ]
-            if distincion and distincion in DISTINCIONES_MERITO:
+            if distincion and distincion in distincion:
                 self.merito_academico = 'SI'
                 print(f" Mérito académico: {distincion}")
     
@@ -152,7 +148,6 @@ class PoliticaAccionAfirmativa:
         """Aplica si está cursando último año de bachillerato."""
         if es_bachiller:
             self.bachiller_periodo_academico = 'SI'
-            
             if pertenece_pueblos:
                 self.bachiller_pueblos_nacionalidad = 'SI'
                 print(f" Bachiller de pueblos y nacionalidades")
@@ -160,31 +155,20 @@ class PoliticaAccionAfirmativa:
                 print(f" Bachiller último año")
     
     def calcular_segmento(self) -> str:
-        """
-        Calcula el segmento de asignación según orden obligatorio.
-        
-        Returns:
-            str: Segmento asignado
-        """
-        # Verificar cada segmento en orden de prioridad
-        
-        # 1. CUOTAS (si tiene cupo histórico aceptado, NO puede ser cuotas)
-        if self.cupo_aceptado_historico_pc == 'NO':
-            # Cuotas aplica si tiene al menos una PAA
-            tiene_paa = any([
-                self.condicion_socioeconomica == 'SI',
+        """Determina el segmento de asignación según orden SENESCYT."""
+        # 1. CUOTAS
+        if any([self.condicion_socioeconomica == 'SI',
                 self.ruralidad == 'SI',
                 self.discapacidad == 'SI',
                 self.pueblos_nacionalidades == 'SI',
                 self.victima_violencia == 'SI',
                 self.migrantes_retornados == 'SI'
-            ])
+            ]):
             
-            if tiene_paa:
-                self.segmento_asignado = 'CUOTAS'
-                self.prioridad_segmento = 1
-                print(f" Segmento: CUOTAS (Prioridad 1)")
-                return self.segmento_asignado
+            self.segmento_asignado = 'CUOTAS'
+            self.prioridad_segmento = 1
+            print(f" Segmento: CUOTAS (Prioridad 1)")
+            return self.segmento_asignado
         
         # 2. VULNERABILIDAD SOCIOECONÓMICA
         if self.vulnerabilidad_socioeconomica == 'SI':
@@ -230,16 +214,13 @@ class PoliticaAccionAfirmativa:
             'merito': self.merito_academico,
             'pueblos': self.pueblos_nacionalidades,
             'discapacidad': self.discapacidad,
-            'ruralidad': self.ruralidad,
-            'cupo_historico': self.cupo_aceptado_historico_pc
+            'ruralidad': self.ruralidad
         }
-    
+
     def __str__(self) -> str:
-        """Representación en string."""
-        return (f"PAA(Postulante: {self.id_postulante}, "
-                f"Segmento: {self.segmento_asignado}, "
-                f"Prioridad: {self.prioridad_segmento})")
-    
+        """Representación legible de la PAA."""
+        return f"PAA(Postulante:{self.id_postulante}, Segmento:{self.segmento_asignado}, Prioridad:{self.prioridad_segmento})"
+
     @classmethod
     def obtener_total(cls) -> int:
         """Total de PAA creadas."""
