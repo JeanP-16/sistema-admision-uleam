@@ -1,6 +1,6 @@
 """
 Módulo: Inscripcion
-Autor: Jean Pierre Flores Piloso
+Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
 Fecha: Octubre 2025
 Descripción: Clase que representa la inscripción de un postulante a una carrera.
               Crea automáticamente la evaluación al inscribirse.
