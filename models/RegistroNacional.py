@@ -191,14 +191,14 @@ class RegistroNacional:
         self.carnet_discapacidad = carnet
         self.tipo_discapacidad = tipo.upper()
         self.porcentaje_discapacidad = porcentaje
-        print(f"♿ Discapacidad registrada: {tipo} ({porcentaje}%)")
+        print(f" Discapacidad registrada: {tipo} ({porcentaje}%)")
     
     def asignar_persona_apoyo(self, identificacion: str, nombres: str, correo: str):
         """Asigna persona de apoyo para postulante con discapacidad."""
         self.identificacion_apoyo = identificacion
         self.nombres_apoyo = nombres
         self.correo_apoyo = correo
-        print(f"👥 Persona de apoyo: {nombres}")
+        print(f" Persona de apoyo: {nombres}")
     
     def validar_completitud(self) -> bool:
         """
@@ -264,16 +264,16 @@ class RegistroNacional:
             self.observacion_acepta_cupo = (f"Tiene un cupo aceptado en {periodo}, "
                                            "su proceso está condicionado al levantamiento "
                                            "del estado académico")
-            print(f"⚠️ Cupo anterior detectado: {periodo}")
+            print(f" Cupo anterior detectado: {periodo}")
     
     def mostrar_resumen_completo(self):
         """Muestra un resumen completo y detallado del registro."""
         print("\n" + "=" * 80)
-        print("📋 RESUMEN COMPLETO DEL REGISTRO NACIONAL")
+        print(" RESUMEN COMPLETO DEL REGISTRO NACIONAL")
         print("=" * 80)
         
         # Datos personales
-        print("\n👤 DATOS PERSONALES:")
+        print("\n  DATOS PERSONALES:")
         print(f"   Identificación: {self.identificacion} ({self.tipo_documento})")
         print(f"   Nombres Completos: {self.nombres} {self.apellidos}")
         print(f"   Fecha de Nacimiento: {self.fecha_nacimiento if self.fecha_nacimiento else 'No registrada'}")
@@ -284,7 +284,7 @@ class RegistroNacional:
         
         # Ubicación
         if self.provincia_reside:
-            print("\n📍 UBICACIÓN:")
+            print("\n  UBICACIÓN:")
             print(f"   Provincia: {self.provincia_reside}")
             print(f"   Cantón: {self.canton_reside}")
             print(f"   Parroquia: {self.parroquia_reside}")
@@ -293,7 +293,7 @@ class RegistroNacional:
         
         # Contacto
         if self.celular or self.correo:
-            print("\n📞 CONTACTO:")
+            print("\n  CONTACTO:")
             if self.celular:
                 print(f"   Celular: {self.celular}")
             if self.correo:
@@ -301,7 +301,7 @@ class RegistroNacional:
         
         # Datos académicos
         if self.unidad_educativa:
-            print("\n🎓 DATOS ACADÉMICOS:")
+            print("\n  DATOS ACADÉMICOS:")
             print(f"   Unidad Educativa: {self.unidad_educativa}")
             print(f"   Tipo: {self.tipo_unidad_educativa}")
             print(f"   Calificación: {self.calificacion}")
@@ -310,19 +310,19 @@ class RegistroNacional:
         
         # Discapacidad
         if self.carnet_discapacidad:
-            print("\n♿ DISCAPACIDAD:")
+            print("\n  DISCAPACIDAD:")
             print(f"   Carnet: {self.carnet_discapacidad}")
             print(f"   Tipo: {self.tipo_discapacidad}")
             print(f"   Porcentaje: {self.porcentaje_discapacidad}%")
         
         # Estado del registro
-        print("\n✅ ESTADO DEL REGISTRO:")
+        print("\n  ESTADO DEL REGISTRO:")
         print(f"   Estado: {self.estado}")
         print(f"   Habilitación: {self.estado_registro_nacional}")
         print(f"   Fecha de Registro: {self.fecha_registro_nacional.strftime('%d/%m/%Y %H:%M:%S')}")
         
         if self.observacion_estado:
-            print(f"\n   ⚠️ Observación: {self.observacion_estado}")
+            print(f"\n     Observación: {self.observacion_estado}")
         
         print("=" * 80)
     
@@ -383,11 +383,11 @@ class RegistroNacional:
     def listar_todos_registros():
         """Lista todos los registros existentes."""
         if not RegistroNacional._registros_db:
-            print("\n⚠️ No hay registros en el sistema")
+            print("\n  No hay registros en el sistema")
             return
         
         print("\n" + "=" * 80)
-        print(f"📋 LISTA DE REGISTROS NACIONALES ({len(RegistroNacional._registros_db)} registros)")
+        print(f" LISTA DE REGISTROS NACIONALES ({len(RegistroNacional._registros_db)} registros)")
         print("=" * 80)
         
         for i, (cedula, registro) in enumerate(RegistroNacional._registros_db.items(), 1):
@@ -412,7 +412,7 @@ class RegistroNacional:
     def cargar_registros_prueba(cls):
         """Carga 6 registros de prueba de forma silenciosa."""
         
-        # 1. COMPLETO ✅ - Jean Pierre
+        # 1. COMPLETO  - Jean Pierre
         r1 = cls("1316202082", "JEAN PIERRE", "FLORES PILOSO")
         r1.completar_datos_personales("2007-05-15", "HOMBRE", "MESTIZO")
         r1.completar_ubicacion("MANABÍ", "MANTA", "MANTA", "LOS ESTEROS", "AV. 24 DE MAYO")
@@ -420,14 +420,14 @@ class RegistroNacional:
         r1.completar_datos_academicos("U.E. MANTA", "FISCAL", 9.5, "SI")
         r1.validar_completitud()
         
-        # 2. INCOMPLETO ❌ - María (Falta contacto)
+        # 2. INCOMPLETO  - María (Falta contacto)
         r2 = cls("1304567890", "MARÍA ELENA", "GARCÍA MENDOZA")
         r2.completar_datos_personales("2006-08-22", "MUJER", "MESTIZO")
         r2.completar_ubicacion("MANABÍ", "PORTOVIEJO", "PORTOVIEJO", "12 DE MARZO", "CALLE 10")
         r2.completar_datos_academicos("U.E. PORTOVIEJO", "FISCAL", 9.2, "NO")
         r2.validar_completitud()
         
-        # 3. COMPLETO ✅ - Braddy
+        # 3. COMPLETO  - Braddy
         r3 = cls("1350432058", "BRADDY LONDRE", "VERA ANCHUNDIA")
         r3.completar_datos_personales("2007-03-20", "HOMBRE", "MONTUBIO")
         r3.completar_ubicacion("MANABÍ", "CHONE", "CHONE", "CENTRO", "CALLE PRINCIPAL")
@@ -435,14 +435,14 @@ class RegistroNacional:
         r3.completar_datos_academicos("U.E. CHONE", "FISCAL", 9.0, "NO")
         r3.validar_completitud()
         
-        # 4. INCOMPLETO ❌ - Carlos (Falta ubicación)
+        # 4. INCOMPLETO  - Carlos (Falta ubicación)
         r4 = cls("1312345678", "CARLOS ANDRÉS", "MOREIRA CEDEÑO")
         r4.completar_datos_personales("2007-01-10", "HOMBRE", "MESTIZO")
         r4.completar_contacto("0966666666", "carlos.moreira@uleam.edu.ec")
         r4.completar_datos_academicos("U.E. CHONE", "FISCOMISIONAL", 8.7, "NO")
         r4.validar_completitud()
         
-        # 5. COMPLETO ✅ - Bismark
+        # 5. COMPLETO  - Bismark
         r5 = cls("1360234567", "BISMARK GABRIEL", "CEVALLOS CEDEÑO")
         r5.completar_datos_personales("2007-07-10", "HOMBRE", "MESTIZO")
         r5.completar_ubicacion("MANABÍ", "MANTA", "MANTA", "TARQUI", "CALLE 10")
@@ -450,7 +450,7 @@ class RegistroNacional:
         r5.completar_datos_academicos("U.E. PARTICULAR", "PARTICULAR", 8.8, "NO")
         r5.validar_completitud()
         
-        # 6. INCOMPLETO ❌ - Daniela (Falta datos académicos)
+        # 6. INCOMPLETO  - Daniela (Falta datos académicos)
         r6 = cls("1355555555", "DANIELA STEFANIA", "MERA ANCHUNDIA")
         r6.completar_datos_personales("2006-11-15", "MUJER", "MESTIZO")
         r6.completar_ubicacion("MANABÍ", "JIPIJAPA", "JIPIJAPA", "CENTRO", "AV. PRINCIPAL")
