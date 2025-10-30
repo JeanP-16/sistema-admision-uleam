@@ -1,6 +1,6 @@
 """
 Módulo: RegistroNacional
-Autor: Jean Pierre Flores Piloso - Equipo 3ro TI "C"
+Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallo
 Fecha: Octubre 2025
 Descripción: Gestiona el Registro Nacional del postulante según SENESCYT
 Basado en: cgtic-ddpti-2025-m-008 (Servicio Web Registro Nacional)
