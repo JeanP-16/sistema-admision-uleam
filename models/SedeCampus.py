@@ -1,10 +1,6 @@
 """
 Módulo: SedeCampus
-<<<<<<< HEAD
 Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
-=======
-Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Gabriel Cevallos
->>>>>>> 029f97d (Actualización definitiva: modelos y main.py con herencia y polimorfismo)
 Fecha: Octubre 2025
 Descripción:
     Gestiona las sedes y campus de la Universidad Laica Eloy Alfaro de Manabí (ULEAM),
@@ -142,3 +138,5 @@ class SedeCampus(EntidadUniversitaria):
     def obtener_total_sedes(cls) -> int:
         """Total de sedes creadas."""
         return cls._contador
+
+

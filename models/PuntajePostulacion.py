@@ -1,11 +1,6 @@
 """
-<<<<<<< HEAD
 Módulo: PuntajePostulacion
 Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
-=======
-Modulo: PuntajePostulacion
-Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Gabriel Cevallos
->>>>>>> 029f97d (Actualización definitiva: modelos y main.py con herencia y polimorfismo)
 Fecha: Octubre 2025
 Descripcion: Clase que calcula el puntaje final de postulacion segun SENESCYT
 """
@@ -29,7 +24,7 @@ class PuntajePostulacion:
     PESO_MERITO = 0.20
     PUNTAJE_MAXIMO = 1000
     
-    def __init__(self,
+    def _init_(self,
                  id_postulante: int,
                  nota_grado: float,
                  puntaje_evaluacion: float,
@@ -146,5 +141,5 @@ class PuntajePostulacion:
             print(f"\nObservaciones: {self.observaciones}")
         print("=" * 60)
     
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f"PuntajePostulacion(ID:{self.id_puntaje}, Postulante:{self.id_postulante}, Puntaje:{self.puntaje_final})"

@@ -1,11 +1,6 @@
 """
-<<<<<<< HEAD
 Módulo: Evaluacion
 Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos.
-=======
-Modulo: Evaluacion
-Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Gabriel Cevallos
->>>>>>> 029f97d (Actualización definitiva: modelos y main.py con herencia y polimorfismo)
 Fecha: Octubre 2025
 Descripcion: Clase que representa una evaluacion academica con programacion automatica
 """

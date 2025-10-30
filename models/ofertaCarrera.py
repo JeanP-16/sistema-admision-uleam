@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 # ==============================
 # CLASES BASE ABSTRACTAS
 # ==============================
-
+## Nota = Cargar la oferta y las carreras o cupos. y la persona solo pueda visualizar y no hay limites
 class GestionCupos(ABC):
     """Clase abstracta que define métodos generales para gestión de cupos."""
 
@@ -25,7 +25,7 @@ class GestionCupos(ABC):
     @abstractmethod
     def reservarCupo(self, segmento: str) -> bool:
         pass
-
+## no reservar cupoo, tengo una oferta "lo que tengo de oferta "
     @abstractmethod
     def liberarCupo(self, segmento: str) -> None:
         pass

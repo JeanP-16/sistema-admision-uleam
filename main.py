@@ -503,21 +503,23 @@ def main():
                 ver_todos_registros()
             elif opcion == '5':
                 crear_inscripcion()
-            elif opcion == '6':
-                consultar_evaluacion()
-            elif opcion == '7':
-                consultar_asignacion()
-            elif opcion == '8':
-                consultar_puntaje()
-            elif opcion == '9':
-                simular_proceso_completo()
+
+            # ================================
+            # OPCIONES EN MODO DEMO (NO ACTIVAS)
+            # ================================
+            elif opcion in ['6', '7', '8', '9']:
+                print("\n⚙️  MODO DEMO ACTIVADO")
+                print("   Esta opción está deshabilitada temporalmente para la versión de demostración.")
+                print("   Próximamente podrá consultar evaluaciones, asignaciones y puntajes reales.")
+                print("   Gracias por probar el Sistema de Admisión ULEAM 2025.")
+
+            # ================================
+            # SALIR Y MOSTRAR RESUMEN FINAL
+            # ================================
             elif opcion == '0':
                 print("\nGracias por usar el Sistema de Admision ULEAM")
                 print("Hasta pronto!")
 
-                # =============================================
-                # RESUMEN DE HERENCIA, ABSTRACTAS Y POLIMORFISMO
-                # =============================================
                 print("\n" + "=" * 80)
                 print("RESUMEN DE HERENCIA Y POLIMORFISMO - MODELOS ULEAM")
                 print("=" * 80)
@@ -593,9 +595,8 @@ def main():
 
                 except Exception as e:
                     print(f"\n[Error] No se pudo generar el resumen: {e}")
-
                 break
-            
+
             else:
                 print("\nOpcion invalida. Intente nuevamente.")
         
@@ -605,6 +606,7 @@ def main():
         except Exception as e:
             print(f"\nError: {str(e)}")
             print("Por favor, intente nuevamente")
+
 
 if __name__ == "__main__":
     main()

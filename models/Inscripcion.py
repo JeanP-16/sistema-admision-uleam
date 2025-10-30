@@ -1,10 +1,6 @@
 """
 Módulo: Inscripcion
-<<<<<<< HEAD
 Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
-=======
-Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Gabriel Cevallos
->>>>>>> 029f97d (Actualización definitiva: modelos y main.py con herencia y polimorfismo)
 Fecha: Octubre 2025
 Descripción: Clase que representa la inscripción de un postulante a una carrera.
               Implementa herencia, abstracción y polimorfismo básico.
