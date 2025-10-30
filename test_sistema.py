@@ -29,7 +29,7 @@ def test_completo():
     print("\n1️⃣ CREANDO SEDES...")
     sede_manta = SedeCampus(1)
     sede_chone = SedeCampus(2)
-    print("✅ Sedes creadas")
+    print(" Sedes creadas")
     
     # 2. CREAR OFERTAS
     print("\n2️⃣ CREANDO OFERTAS...")
@@ -43,7 +43,7 @@ def test_completo():
         modalidad="PRESENCIAL",
         jornada="MATUTINA"
     )
-    print("✅ Ofertas creadas")
+    print(" Ofertas creadas")
     
     # 3. CREAR REGISTRO NACIONAL
     print("\n3️⃣ CREANDO REGISTRO NACIONAL...")
@@ -59,7 +59,7 @@ def test_completo():
     registro.canton_reside = "Manta"
     registro.estado = "COMPLETO"
     registro.calificacion = 9.5
-    print("✅ Registro Nacional creado")
+    print(" Registro Nacional creado")
     
     # 4. CREAR POSTULANTE
     print("\n4️⃣ CREANDO POSTULANTE...")
@@ -70,7 +70,7 @@ def test_completo():
         telefono="0987654321",
         fecha_nacimiento="2002-05-15"
     )
-    print("✅ Postulante creado")
+    print(" Postulante creado")
     
     # 5. CREAR INSCRIPCION (crea evaluacion automatica)
     print("\n5️⃣ CREANDO INSCRIPCION...")
@@ -82,13 +82,13 @@ def test_completo():
         jornada="MATUTINA",
         cedula_postulante="1316202082"
     )
-    print("✅ Inscripcion creada")
+    print(" Inscripcion creada")
     
     # 6. OBTENER Y CALIFICAR EVALUACION
     print("\n6️⃣ CALIFICANDO EVALUACION...")
     evaluacion = inscripcion.obtenerEvaluacion()
     evaluacion.registrarCalificacion(850.0)
-    print("✅ Evaluacion calificada: 850/1000")
+    print(" Evaluacion calificada: 850/1000")
     
     # 7. CALCULAR PUNTAJE
     print("\n7️⃣ CALCULANDO PUNTAJE...")
@@ -99,7 +99,7 @@ def test_completo():
         cedula_postulante="1316202082",
         puntaje_meritos=50.0
     )
-    print(f"✅ Puntaje calculado: {puntaje.puntaje_final}/1000")
+    print(f" Puntaje calculado: {puntaje.puntaje_final}/1000")
     
     # 8. CREAR ASIGNACION
     print("\n8️⃣ CREANDO ASIGNACION...")
@@ -111,11 +111,11 @@ def test_completo():
         cedula_postulante="1316202082"
     )
     asignacion.confirmar()
-    print("✅ Asignacion confirmada")
+    print(" Asignacion confirmada")
     
     # RESUMEN FINAL
     print("\n" + "=" * 70)
-    print("✅ TEST COMPLETADO EXITOSAMENTE")
+    print(" TEST COMPLETADO EXITOSAMENTE")
     print("=" * 70)
     print(f"Postulante: {postulante.nombre_completo}")
     print(f"Carrera: Tecnologias de la Informacion")
@@ -127,6 +127,6 @@ if __name__ == "__main__":
     try:
         test_completo()
     except Exception as e:
-        print(f"\n❌ ERROR: {str(e)}")
+        print(f"\n ERROR: {str(e)}")
         import traceback
         traceback.print_exc()
