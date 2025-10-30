@@ -1,6 +1,6 @@
 """
 Módulo: Evaluacion
-Autor: Jean Pierre Flores Piloso
+Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
 Fecha: Octubre 2025
 Descripción: Clase que representa una evaluación académica con programación automática
 """
