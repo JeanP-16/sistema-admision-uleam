@@ -63,7 +63,7 @@ class Postulante:
         self._puntajes = []
         self._asignacion = None
         
-        print(f"✅ Postulante creado: {self.nombre_completo} (ID: {self.id_postulante})")
+        print(f" Postulante creado: {self.nombre_completo} (ID: {self.id_postulante})")
     
     def _validar_cedula(self, cedula: str) -> str:
         """
@@ -79,12 +79,12 @@ class Postulante:
         
         # Verificar que tenga 10 dígitos
         if not cedula.isdigit() or len(cedula) != 10:
-            raise ValueError(f"❌ Cédula inválida: debe tener 10 dígitos numéricos")
+            raise ValueError(f" Cédula inválida: debe tener 10 dígitos numéricos")
         
         # Verificar que los dos primeros dígitos sean válidos (01-24)
         provincia = int(cedula[:2])
         if provincia < 1 or provincia > 24:
-            raise ValueError(f"❌ Código de provincia inválido: {provincia}")
+            raise ValueError(f" Código de provincia inválido: {provincia}")
         
         return cedula
     
@@ -105,7 +105,7 @@ class Postulante:
         patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         
         if not re.match(patron, email):
-            raise ValueError(f"❌ Email inválido: {email}")
+            raise ValueError(f" Email inválido: {email}")
         
         return email
     
@@ -125,10 +125,10 @@ class Postulante:
         
         if es_valido:
             self.estado_registro = 'VERIFICADO'
-            print(f"✅ Identidad verificada: {self.nombre_completo}")
+            print(f" Identidad verificada: {self.nombre_completo}")
         else:
             self.estado_registro = 'RECHAZADO'
-            print(f"❌ Identidad rechazada: {self.nombre_completo}")
+            print(f" Identidad rechazada: {self.nombre_completo}")
         
         return es_valido
     
@@ -143,11 +143,11 @@ class Postulante:
         """
         if email:
             self.email = self._validar_email(email)
-            print(f"📧 Email actualizado: {self.email}")
+            print(f" Email actualizado: {self.email}")
         
         if telefono:
             self.telefono = telefono.strip()
-            print(f"📱 Teléfono actualizado: {self.telefono}")
+            print(f" Teléfono actualizado: {self.telefono}")
     
     def obtenerInscripciones(self) -> List:
         """
@@ -166,7 +166,7 @@ class Postulante:
             inscripcion: Objeto Inscripcion
         """
         self._inscripciones.append(inscripcion)
-        print(f"📝 Inscripción agregada para {self.nombre_completo}")
+        print(f" Inscripción agregada para {self.nombre_completo}")
     
     def obtenerPuntajes(self) -> List:
         """
@@ -251,9 +251,9 @@ if __name__ == "__main__":
         # Actualizar datos
         postulante1.actualizarDatos(telefono="0979421538")
         
-        print(f"\n📊 Total de postulantes: {Postulante.obtener_total_postulantes()}")
+        print(f"\n Total de postulantes: {Postulante.obtener_total_postulantes()}")
         
     except ValueError as e:
-        print(f"❌ Error: {e}")
+        print(f" Error: {e}")
     
     print("\n" + "=" * 60)
