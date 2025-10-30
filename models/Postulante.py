@@ -1,6 +1,6 @@
 """
 Módulo: Postulante
-Autor: Jean Pierre Flores Piloso
+https://github.com/JeanP-16/sistema-admision-uleam
 Fecha: Octubre 2025
 Descripción: Clase que representa a un postulante en el sistema de admisión ULEAM
 """
