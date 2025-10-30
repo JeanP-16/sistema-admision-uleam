@@ -1,6 +1,6 @@
 """
 Módulo: SedeCampus
-Autor: Jean Pierre Flores Piloso - Equipo 3ro TI "C"
+Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
 Fecha: Octubre 2025
 Descripción: Gestiona las sedes y campus de ULEAM
 Basado en: 102_ULEAM_OFERTASEGMENTADA_IIPA-2025.pdf
