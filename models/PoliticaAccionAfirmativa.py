@@ -1,6 +1,6 @@
 """
 Módulo: PoliticaAccionAfirmativa (PAA)
-Autor: Jean Pierre Flores Piloso - Equipo 3ro TI "C"
+Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
 Fecha: Octubre 2025
 Descripción: Gestiona las Políticas de Acción Afirmativa según SENESCYT
 Basado en: cgtic-ddpti-2025-m-002 (Servicio Web PAA y Orden de Asignación)
