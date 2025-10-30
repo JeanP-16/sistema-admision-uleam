@@ -350,7 +350,11 @@ def consultar_asignacion():
         asignacion.mostrar_info()
     else:
         print(f"\nNo se encontro asignacion con cedula: {cedula}")
-        print("Nota: Las asignaciones se crean despues de completar la evaluacion")
+        print("\n📅 Su examen aún no se ha realizado o está pendiente de calificación.")
+        print("   Espere hasta la fecha programada para conocer su resultado y asignación de cupo.")
+        print("   Puede revisar su fecha de examen con la opción 6 del menú.")
+
+
 
 def consultar_puntaje():
     """Opcion 8: Consultar puntaje por cedula"""
@@ -369,7 +373,10 @@ def consultar_puntaje():
             puntaje.mostrar_desglose()
     else:
         print(f"\nNo se encontro puntaje con cedula: {cedula}")
-        print("Nota: Los puntajes se calculan despues de completar la evaluacion")
+        print("\n📅 Su examen aún no se ha realizado o está pendiente de calificación.")
+        print("   Espere hasta la fecha programada para poder consultar su puntaje final.")
+        print("   Puede revisar su fecha de examen con la opción 6 del menú.")
+
 
 def simular_proceso_completo():
     """Opcion 9: Simular proceso completo para demo"""
@@ -507,7 +514,88 @@ def main():
             elif opcion == '0':
                 print("\nGracias por usar el Sistema de Admision ULEAM")
                 print("Hasta pronto!")
+
+                # =============================================
+                # RESUMEN DE HERENCIA, ABSTRACTAS Y POLIMORFISMO
+                # =============================================
+                print("\n" + "=" * 80)
+                print("RESUMEN DE HERENCIA Y POLIMORFISMO - MODELOS ULEAM")
+                print("=" * 80)
+
+                try:
+                    # Importar todos los módulos principales
+                    from models.Asignacion import Asignacion, ProcesoAdmision
+                    from models.Inscripcion import Inscripcion, ProcesoBase
+                    from models.ofertaCarrera import OfertaCarrera, GestionCupos, InformacionSede
+                    from models.PoliticaAccionAfirmativa import PoliticaAccionAfirmativa, EvaluacionSocial, SegmentacionAsignacion
+                    from models.SedeCampus import SedeCampus, EntidadUniversitaria
+                    from models.Evaluacion import Evaluacion
+                    from models.Postulante import Postulante, Persona
+                    from models.PuntajePostulacion import PuntajePostulacion
+                    from models.RegistroNacional import RegistroNacional, DatosPersonales, Validable
+
+                    # 1. CLASES ABSTRACTAS Y SUBCLASES
+                    print("\n[1] CLASES ABSTRACTAS Y SUS SUBCLASES:")
+                    print(" - ProcesoAdmision →", ProcesoAdmision.__subclasses__())
+                    print(" - ProcesoBase →", ProcesoBase.__subclasses__())
+                    print(" - GestionCupos →", GestionCupos.__subclasses__())
+                    print(" - InformacionSede →", InformacionSede.__subclasses__())
+                    print(" - EvaluacionSocial →", EvaluacionSocial.__subclasses__())
+                    print(" - SegmentacionAsignacion →", SegmentacionAsignacion.__subclasses__())
+                    print(" - EntidadUniversitaria →", EntidadUniversitaria.__subclasses__())
+                    print(" - Persona →", Persona.__subclasses__())
+                    print(" - Validable →", Validable.__subclasses__())
+
+                    # 2. HERENCIA MÚLTIPLE
+                    print("\n[2] CLASES CON HERENCIA MÚLTIPLE:")
+                    print(" - OfertaCarrera →", OfertaCarrera.__bases__)
+                    print(" - PoliticaAccionAfirmativa →", PoliticaAccionAfirmativa.__bases__)
+                    print(" - RegistroNacional →", RegistroNacional.__bases__)
+
+                    # 3. HERENCIA SIMPLE
+                    print("\n[3] CLASES CON HERENCIA SIMPLE:")
+                    print(" - Asignacion →", Asignacion.__bases__)
+                    print(" - Inscripcion →", Inscripcion.__bases__)
+                    print(" - Postulante →", Postulante.__bases__)
+                    print(" - SedeCampus →", SedeCampus.__bases__)
+                    print(" - PuntajePostulacion →", PuntajePostulacion.__bases__)
+                    print(" - Evaluacion →", Evaluacion.__bases__)
+
+                    # 4. POLIMORFISMO DETECTADO
+                    print("\n[4] POLIMORFISMO DEMOSTRADO EN:")
+                    print(" - confirmar() y mostrar_info() en Asignacion")
+                    print(" - completar() y mostrar_info_completa() en Inscripcion")
+                    print(" - mostrar_resumen() en OfertaCarrera")
+                    print(" - calcular_segmento() en PoliticaAccionAfirmativa")
+                    print(" - mostrar_info() en SedeCampus")
+                    print(" - validarIdentidad() y calcularEdad() en Postulante")
+                    print(" - validar_completitud() en RegistroNacional")
+                    print(" - mostrar_desglose() en PuntajePostulacion")
+
+                    # 5. TOTAL DE SUBCLASES
+                    total = (
+                        len(ProcesoAdmision.__subclasses__()) +
+                        len(ProcesoBase.__subclasses__()) +
+                        len(GestionCupos.__subclasses__()) +
+                        len(InformacionSede.__subclasses__()) +
+                        len(EvaluacionSocial.__subclasses__()) +
+                        len(SegmentacionAsignacion.__subclasses__()) +
+                        len(EntidadUniversitaria.__subclasses__()) +
+                        len(Persona.__subclasses__()) +
+                        len(Validable.__subclasses__())
+                    )
+                    print("\n[5] TOTAL DE SUBCLASES CARGADAS:")
+                    print(f" → Total: {total} clases concretas detectadas")
+
+                    print("\n" + "=" * 80)
+                    print("FIN DEL RESUMEN - SISTEMA DE ADMISION ULEAM 2025")
+                    print("=" * 80)
+
+                except Exception as e:
+                    print(f"\n[Error] No se pudo generar el resumen: {e}")
+
                 break
+            
             else:
                 print("\nOpcion invalida. Intente nuevamente.")
         

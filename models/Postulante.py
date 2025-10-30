@@ -2,63 +2,59 @@
 Módulo: Postulante
 Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
 Fecha: Octubre 2025
-Descripción: Clase que representa a un postulante en el sistema de admisión ULEAM
+Descripcion: Clase que representa a un postulante en el sistema de admision ULEAM
 """
 
 from datetime import datetime
 from typing import Optional, List
 import re
+from abc import ABC, abstractmethod
 
 
-class Postulante:
-    """
-    Representa a una persona que se postula al sistema de admisión.
+# ===== CLASE ABSTRACTA (ABC) =====
+class Persona(ABC):
+    """Clase abstracta base para personas en el sistema"""
     
-    Attributes:
-        id_postulante       (int):      Identificador único del postulante
-        cedula              (str):      Número de cédula (10 dígitos)
-        nombre_completo     (str):      Nombre completo del postulante
-        email               (str):      Correo electrónico
-        telefono            (str):      Número de teléfono
-        fecha_nacimiento    (str):      Fecha de nacimiento (formato: YYYY-MM-DD)
-        estado_registro     (str):      Estado del registro nacional
-        fecha_registro      (datetime): Fecha de registro en el sistema
+    def __init__(self, cedula: str, nombre_completo: str):
+        self.cedula = cedula
+        self.nombre_completo = nombre_completo
+    
+    @abstractmethod
+    def validarIdentidad(self) -> bool:
+        """Metodo abstracto que debe ser implementado"""
+        pass
+    
+    @abstractmethod
+    def calcularEdad(self) -> int:
+        """Metodo abstracto para calcular edad"""
+        pass
+
+
+# ===== HERENCIA SIMPLE: Postulante hereda de Persona =====
+class Postulante(Persona):
+    """
+    Representa a una persona que se postula al sistema de admision.
+    HEREDA de la clase abstracta Persona
     """
     
-    # Atributo de clase - contador de postulantes
     _contador_postulantes = 0
-    
-    # Estados válidos
     ESTADOS_VALIDOS = ['VERIFICADO', 'PENDIENTE', 'RECHAZADO']
     
     def __init__(self, cedula: str, nombre_completo: str, email: str, 
                  telefono: str, fecha_nacimiento: str):
-        """
-        Inicializa un nuevo postulante.
+        # Llamar al constructor de la clase padre (Persona)
+        super().__init__(cedula, nombre_completo)
         
-        Args:
-            cedula:                 Número de cédula de identidad
-            nombre_completo:        Nombre completo del postulante
-            email:                  Correo electrónico
-            telefono:               Número de teléfono
-            fecha_nacimiento:       Fecha de nacimiento (YYYY-MM-DD)
-        Raises:
-            ValueError: Si los datos no son válidos
-        """
-        # Incrementar contador y asignar ID
         Postulante._contador_postulantes += 1
         self.id_postulante = Postulante._contador_postulantes
         
-        # Validar y asignar atributos
         self.cedula = self._validar_cedula(cedula)
-        self.nombre_completo = nombre_completo.strip()
         self.email = self._validar_email(email)
         self.telefono = telefono.strip()
         self.fecha_nacimiento = fecha_nacimiento
         self.estado_registro = 'PENDIENTE'
         self.fecha_registro = datetime.now()
         
-        # Listas relacionadas (inicialmente vacías)
         self._inscripciones = []
         self._puntajes = []
         self._asignacion = None
@@ -66,18 +62,7 @@ class Postulante:
         print(f" Postulante creado: {self.nombre_completo} (ID: {self.id_postulante})")
     
     def _validar_cedula(self, cedula: str) -> str:
-        """
-        Valida el formato de la cédula ecuatoriana.
-        Args:
-            cedula: Número de cédula a validar  
-        Returns:
-            str: Cédula validada 
-        Raises:
-            ValueError: Si la cédula no es válida
-        """
         cedula = cedula.strip()
-        
-        # Verificar que tenga 10 dígitos
         if not cedula.isdigit() or len(cedula) != 10:
             raise ValueError(f" Cédula inválida: debe tener 10 dígitos numéricos")
         
@@ -89,38 +74,16 @@ class Postulante:
         return cedula
     
     def _validar_email(self, email: str) -> str:
-        """
-        Valida el formato del email.
-        
-        Args:
-            email: Correo electrónico a validar
-            
-        Returns:
-            str: Email validado
-            
-        Raises:
-            ValueError: Si el email no es válido
-        """
         email = email.strip().lower()
         patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        
         if not re.match(patron, email):
             raise ValueError(f" Email inválido: {email}")
         
         return email
     
+    # IMPLEMENTACION de metodo abstracto (POLIMORFISMO)
     def validarIdentidad(self) -> bool:
-        """
-        Verifica la identidad del postulante con el registro nacional.
-        
-        En producción, esto consultaría DIGERCIC.
-        Por ahora, solo valida el formato.
-        
-        Returns:
-            bool: True si la identidad es válida
-        """
-        # Aquí iría la integración con DIGERCIC
-        # Por ahora, solo validamos formato
+        """Implementa el metodo abstracto de Persona"""
         es_valido = len(self.cedula) == 10 and self.cedula.isdigit()
         
         if es_valido:
@@ -187,52 +150,65 @@ class Postulante:
         return self._asignacion is not None
     
     def calcularEdad(self) -> int:
-        """
-        Calcula la edad del postulante.
-        
-        Returns:
-            int: Edad en años
-        """
+        """Implementa el metodo abstracto de Persona"""
         fecha_nac = datetime.strptime(self.fecha_nacimiento, '%Y-%m-%d')
         hoy = datetime.now()
         edad = hoy.year - fecha_nac.year
         
-        # Ajustar si no ha cumplido años este año
         if (hoy.month, hoy.day) < (fecha_nac.month, fecha_nac.day):
             edad -= 1
         
         return edad
     
+    # DECORADOR @property
+    @property
+    def nombre_apellidos(self):
+        """Property para obtener nombre completo"""
+        return self.nombre_completo
+    
+    def actualizarDatos(self, email: Optional[str] = None, 
+                       telefono: Optional[str] = None) -> None:
+        if email:
+            self.email = self._validar_email(email)
+            print(f"Email actualizado: {self.email}")
+        
+        if telefono:
+            self.telefono = telefono.strip()
+            print(f"Telefono actualizado: {self.telefono}")
+    
+    def obtenerInscripciones(self) -> List:
+        return self._inscripciones.copy()
+    
+    def agregarInscripcion(self, inscripcion) -> None:
+        self._inscripciones.append(inscripcion)
+        print(f"Inscripcion agregada para {self.nombre_completo}")
+    
+    def obtenerPuntajes(self) -> List:
+        return self._puntajes.copy()
+    
+    def tieneAsignacionActiva(self) -> bool:
+        return self._asignacion is not None
+    
     def __str__(self) -> str:
-        """Representación en string del postulante."""
         return (f"Postulante(ID: {self.id_postulante}, "
                 f"Nombre: {self.nombre_completo}, "
-                f"Cédula: {self.cedula}, "
+                f"Cedula: {self.cedula}, "
                 f"Estado: {self.estado_registro})")
     
     def __repr__(self) -> str:
-        """Representación técnica del postulante."""
         return self.__str__()
     
     @classmethod
     def obtener_total_postulantes(cls) -> int:
-        """
-        Obtiene el total de postulantes registrados.
-        
-        Returns:
-            int: Número total de postulantes
-        """
         return cls._contador_postulantes
 
 
-# ========== EJEMPLO DE USO ==========
 if __name__ == "__main__":
     print("=" * 60)
-    print("PRUEBA DEL MÓDULO POSTULANTE")
+    print("PRUEBA DEL MODULO POSTULANTE CON HERENCIA")
     print("=" * 60)
     
     try:
-        # Crear postulante 1
         postulante1 = Postulante(
             cedula="1316202082",
             nombre_completo="Jean Pierre Flores Piloso",
@@ -241,14 +217,11 @@ if __name__ == "__main__":
             fecha_nacimiento="2007-03-01"
         )
         
-        # Validar identidad
         postulante1.validarIdentidad()
-        
-        # Mostrar información
         print(f"\n{postulante1}")
         print(f"Edad: {postulante1.calcularEdad()} años")
+        print(f"Nombre (property): {postulante1.nombre_apellidos}")
         
-        # Actualizar datos
         postulante1.actualizarDatos(telefono="0979421538")
         
         print(f"\n Total de postulantes: {Postulante.obtener_total_postulantes()}")
