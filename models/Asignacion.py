@@ -1,10 +1,6 @@
 """
 Módulo: Asignacion
-<<<<<<< HEAD
 Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos.
-=======
-Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Gabriel Cevallos
->>>>>>> 029f97d (Actualización definitiva: modelos y main.py con herencia y polimorfismo)
 Fecha: Octubre 2025
 Descripción: Clase que gestiona la asignación de cupos a postulantes,
               con integración de herencia, clases abstractas y polimorfismo básico.
@@ -51,7 +47,7 @@ class Asignacion(ProcesoAdmision):
     _contador_asignaciones = 0
     ESTADOS_VALIDOS = ['PENDIENTE', 'CONFIRMADA', 'RECHAZADA', 'EXPIRADA']
 
-    def __init__(self,
+    def _init_(self,
                  id_postulante: int,
                  carrera_id: int,
                  sede_id: int,
@@ -138,5 +134,5 @@ class Asignacion(ProcesoAdmision):
         """Agrega observaciones a la asignación."""
         self.observaciones = texto
 
-    def __str__(self) -> str:
+    def _str_(self) -> str:
         return f"Asignacion(ID:{self.id_asignacion}, Postulante:{self.id_postulante}, Estado:{self.estado})"
