@@ -110,7 +110,7 @@ class OfertaCarrera:
             'GENERAL': 0
         }
         
-        print(f"✅ Oferta creada: {nombre_carrera[:40]} ({nombre_sede})")
+        print(f"  Oferta creada: {nombre_carrera[:40]} ({nombre_sede})")
         print(f"   Cupos: {cupos_total} | {nivel} | {modalidad} | {jornada}")
     
     def _calcular_distribucion_cupos(self):
@@ -152,7 +152,7 @@ class OfertaCarrera:
         # Recalcular total
         self.cupos_total = cupos_nivelacion + cupos_primer_semestre + cupos_pc
         
-        print(f"📊 Configuración desde PDF aplicada")
+        print(f"  Configuración desde PDF aplicada")
         print(f"   Nivelación: {cupos_nivelacion} | Primer Semestre: {cupos_primer_semestre} | PC: {cupos_pc}")
     
     def calcularCuposDisponibles(self, segmento: Optional[str] = None) -> int:
@@ -201,20 +201,20 @@ class OfertaCarrera:
         segmento = segmento.upper()
         
         if segmento not in self.cupos_asignados:
-            print(f"❌ Segmento inválido: {segmento}")
+            print(f" Segmento inválido: {segmento}")
             return False
         
         # Verificar disponibilidad
         disponibles = self.calcularCuposDisponibles(segmento)
         
         if disponibles <= 0:
-            print(f"❌ No hay cupos disponibles en {segmento}")
+            print(f" No hay cupos disponibles en {segmento}")
             return False
         
         # Reservar cupo
         self.cupos_asignados[segmento] += 1
         
-        print(f"✅ Cupo reservado en {segmento}")
+        print(f"  Cupo reservado en {segmento}")
         print(f"   Asignados: {self.cupos_asignados[segmento]} | Disponibles: {disponibles - 1}")
         
         return True
@@ -224,17 +224,17 @@ class OfertaCarrera:
         segmento = segmento.upper()
         
         if segmento not in self.cupos_asignados:
-            print(f"❌ Segmento inválido: {segmento}")
+            print(f" Segmento inválido: {segmento}")
             return
         
         if self.cupos_asignados[segmento] > 0:
             self.cupos_asignados[segmento] -= 1
             disponibles = self.calcularCuposDisponibles(segmento)
             
-            print(f"♻️ Cupo liberado en {segmento}")
+            print(f" Cupo liberado en {segmento}")
             print(f"   Disponibles ahora: {disponibles}")
         else:
-            print(f"⚠️ No hay cupos asignados en {segmento} para liberar")
+            print(f" No hay cupos asignados en {segmento} para liberar")
     
     def obtener_estadisticas(self) -> dict:
         """Obtiene estadísticas completas de la oferta."""
@@ -348,7 +348,7 @@ if __name__ == "__main__":
     print("=" * 70)
     
     # Ejemplo 1: Tecnologías de la Información (datos reales del PDF)
-    print("\n📊 OFERTA 1: Tecnologías de la Información - Manta")
+    print("\n OFERTA 1: Tecnologías de la Información - Manta")
     print("-" * 70)
     
     datos_ti = {
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     oferta_ti.mostrar_resumen()
     
     # Simular asignaciones
-    print("📝 Simulando asignaciones...")
+    print(" Simulando asignaciones...")
     oferta_ti.reservarCupo("MERITO_ACADEMICO")
     oferta_ti.reservarCupo("VULNERABILIDAD")
     oferta_ti.reservarCupo("GENERAL")
@@ -381,7 +381,7 @@ if __name__ == "__main__":
     oferta_ti.mostrar_resumen()
     
     # Ejemplo 2: Medicina (datos reales)
-    print("\n📊 OFERTA 2: Medicina - Manta")
+    print("\n OFERTA 2: Medicina - Manta")
     print("-" * 70)
     
     datos_medicina = {
@@ -404,5 +404,5 @@ if __name__ == "__main__":
     oferta_medicina = OfertaCarrera.crear_desde_pdf_uleam(datos_medicina)
     print(f"\n{oferta_medicina}")
     
-    print(f"\n📊 Total ofertas creadas: {OfertaCarrera.obtener_total_ofertas()}")
+    print(f"\n Total ofertas creadas: {OfertaCarrera.obtener_total_ofertas()}")
     print("\n" + "=" * 70)
