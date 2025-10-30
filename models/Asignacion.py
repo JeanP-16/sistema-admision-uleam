@@ -1,6 +1,6 @@
 """
 Módulo: Asignacion
-Autor: Jean Pierre Flores Piloso
+Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Grabriel Cevallos
 Fecha: Octubre 2025
 Descripción: Clase que gestiona la asignación de cupos a postulantes
 """
