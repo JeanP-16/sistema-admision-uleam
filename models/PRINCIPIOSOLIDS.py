@@ -1,5 +1,5 @@
 """
-Sistema de Admision ULEAM - COMPLETO Y AUTOMATIZADO
+Sistema de Admision ULEAM 
 Autor: Equipo 3ro TI "C" - Jean Pierre, Braddy, Bismark
 Fecha: Diciembre 2025
 
@@ -22,7 +22,7 @@ Y además muestra CÓDIGOS MALOS para comparar:
 from datetime import datetime, timedelta
 
 # ================== PRINCIPIOS SOLID (CLASES BUENAS) ==================
-import models.PRINCIPIOSOLIDS as PRINCIPIOSOLIDS          # S (SRP)
+from models.RegistroNacional import RegistroNacional          # S (SRP)
 from models.Postulante import Postulante                      # O (OCP)
 from models.SedeCampus import SedeCampus                      # L (LSP)
 import models.PRINCIPIOSOLIDI4 as PRINCIPIOSOLIDI4           # I (ISP) - demo bueno
@@ -349,27 +349,142 @@ def crear_inscripcion():
     print("3. Consulte su evaluacion con la opcion 6")
 
 
-# === Las funciones 6, 7, 8, 9 pueden quedarse definidas o eliminarlas.
-#     Las dejamos por si luego las vuelves a activar, pero NO se usan en el menú. ===
-
 def consultar_evaluacion():
-    """(SIN USO ACTUALMENTE)"""
-    print("Función consultar_evaluacion definida pero no usada en el menú.")
+    """Opcion 6: Consultar evaluación por cedula"""
+    print("\n" + "=" * 60)
+    print("CONSULTAR EVALUACION")
+    print("=" * 60)
+
+    cedula = input("\nIngrese numero de cedula: ").strip()
+
+    evaluacion = next((e for e in evaluaciones_creadas
+                       if e.cedula_postulante == cedula), None)
+
+    if evaluacion:
+        evaluacion.mostrar_info()
+    else:
+        print("\nNo hay evaluacion asociada a esta inscripcion")
 
 
 def consultar_asignacion():
-    """(SIN USO ACTUALMENTE)"""
-    print("Función consultar_asignacion definida pero no usada en el menú.")
+    """Opcion 7: Consultar asignacion por cedula"""
+    print("\n" + "=" * 60)
+    print("CONSULTAR ASIGNACION")
+    print("=" * 60)
+
+    cedula = input("\nIngrese numero de cedula: ").strip()
+
+    asignacion = next((a for a in asignaciones_creadas
+                       if a.cedula_postulante == cedula), None)
+
+    if asignacion:
+        asignacion.mostrar_info()
+    else:
+        print(f"\nNo se encontro asignacion con cedula: {cedula}")
+        print("\n📅 Su examen aún no se ha realizado o está pendiente de "
+              "calificación.")
+        print("   Espere hasta la fecha programada para conocer su resultado "
+              "y asignación de cupo.")
+        print("   Puede revisar su fecha de examen con la opcion 6 del menú.")
 
 
 def consultar_puntaje():
-    """(SIN USO ACTUALMENTE)"""
-    print("Función consultar_puntaje definida pero no usada en el menú.")
+    """Opcion 8: Consultar puntaje por cedula"""
+    print("\n" + "=" * 60)
+    print("CONSULTAR PUNTAJE DE POSTULACION")
+    print("=" * 60)
+
+    cedula = input("\nIngrese numero de cedula: ").strip()
+
+    puntaje = next((p for p in puntajes_creados
+                    if p.cedula_postulante == cedula), None)
+
+    if puntaje:
+        puntaje.mostrar_resumen()
+    else:
+        print(f"\nNo se encontro puntaje con cedula: {cedula}")
 
 
 def simular_proceso_completo():
-    """(SIN USO ACTUALMENTE)"""
-    print("Función simular_proceso_completo definida pero no usada en el menú.")
+    """Opcion 9: Simular proceso completo de admision (DEMO)"""
+    print("\n" + "=" * 60)
+    print("SIMULACION COMPLETA DE PROCESO DE ADMISION")
+    print("=" * 60)
+
+    if not registros_nacionales:
+        print("No hay registros cargados. Inicializando sistema...")
+        inicializar_sistema()
+
+    registro = registros_nacionales[0]
+    cedula = registro.identificacion
+
+    print(f"\nUsando registro de: {registro.nombres} {registro.apellidos} "
+          f"(Cédula: {cedula})")
+
+    nombre_completo = f"{registro.nombres} {registro.apellidos}"
+    email = getattr(registro, "correo", "sin_correo@uleam.edu.ec")
+    telefono = getattr(registro, "celular", "0000000000")
+
+    fecha_nac_str = "2000-01-01"
+
+    postulante = Postulante(
+        cedula=registro.identificacion,
+        nombre_completo=nombre_completo,
+        email=email,
+        telefono=telefono,
+        fecha_nacimiento=fecha_nac_str
+    )
+    postulantes_creados.append(postulante)
+
+    oferta = ofertas_disponibles[0]
+
+    inscripcion = Inscripcion(
+        id_postulante=postulante.id_postulante,
+        carrera_id=oferta.carrera_id,
+        orden_preferencia=1,
+        sede_id=oferta.sede_id,
+        jornada=oferta.jornada,
+        cedula_postulante=cedula
+    )
+    inscripciones_creadas.append(inscripcion)
+
+    evaluacion = inscripcion.obtenerEvaluacion()
+    evaluaciones_creadas.append(evaluacion)
+
+    print("\n1. Inscripcion y evaluacion generadas automaticamente")
+
+    calificacion_evaluacion = 850.0
+    evaluacion.registrarCalificacion(calificacion_evaluacion)
+    print(f"\n2. Evaluacion calificada: {calificacion_evaluacion} puntos")
+
+    puntaje = PuntajePostulacion(
+        id_postulante=postulante.id_postulante,
+        nota_grado=registro.calificacion,
+        puntaje_evaluacion=calificacion_evaluacion,
+        cedula_postulante=cedula,
+        puntaje_meritos=100.0
+    )
+    puntajes_creados.append(puntaje)
+    print(f"\n3. Puntaje calculado: {puntaje.puntaje_final}/1000")
+
+    asignacion = Asignacion(
+        id_postulante=postulante.id_postulante,
+        carrera_id=oferta.carrera_id,
+        sede_id=oferta.sede_id,
+        puntaje_final=puntaje.puntaje_final,
+        cedula_postulante=cedula
+    )
+    asignaciones_creadas.append(asignacion)
+    print(f"\n4. Asignacion creada (ID: {asignacion.id_asignacion})")
+
+    asignacion.confirmar()
+    print(f"\n5. Asignacion confirmada")
+
+    print("\n" + "=" * 60)
+    print("PROCESO COMPLETADO EXITOSAMENTE")
+    print("=" * 60)
+    print(f"\nPuede consultar toda la informacion con la cedula: {cedula}")
+    print("Use las opciones 6, 7 y 8 del menu")
 
 
 # ==================== DEMOS SOLID (BUENOS Y MALOS) ====================
@@ -564,11 +679,10 @@ def mostrar_menu():
     print("3. Verificar Registro Nacional por Cédula")
     print("4. Ver Todos los Registros Nacionales")
     print("5. Crear Inscripcion")
-    # Opciones en estudio
-    print("6. Consultar Evaluacion por Cedula  (EN PROCESO DE ESTUDIO Y PLANIFICACION)")
-    print("7. Consultar Asignacion por Cedula (EN PROCESO DE ESTUDIO Y PLANIFICACION)")
-    print("8. Consultar Puntaje por Cedula    (EN PROCESO DE ESTUDIO Y PLANIFICACION)")
-    print("9. Simular Proceso Completo (DEMO) (EN PROCESO DE ESTUDIO Y PLANIFICACION)")
+    print("6. Consultar Evaluacion por Cedula")
+    print("7. Consultar Asignacion por Cedula")
+    print("8. Consultar Puntaje por Cedula")
+    print("9. Simular Proceso Completo (DEMO)")
     print("-" * 60)
     print("10. DEMO OCP - Postulante (codigo MALO)")
     print("11. DEMO LSP - SedeCampus (codigo MALO)")
@@ -596,11 +710,14 @@ def main():
                 ver_todos_registros()
             elif opcion == '5':
                 crear_inscripcion()
-            # === OPCIONES DESACTIVADAS: SOLO MENSAJE ===
-            elif opcion in ('6', '7', '8', '9'):
-                print("\n⚙️ Esta opción está en PROCESO DE ESTUDIO Y PLANIFICACIÓN.")
-                print("   Próximamente será implementada en el sistema.")
-            # ===========================================
+            elif opcion == '6':
+                consultar_evaluacion()
+            elif opcion == '7':
+                consultar_asignacion()
+            elif opcion == '8':
+                consultar_puntaje()
+            elif opcion == '9':
+                simular_proceso_completo()
             elif opcion == '10':
                 demo_postulante_ocp_malo()
             elif opcion == '11':
