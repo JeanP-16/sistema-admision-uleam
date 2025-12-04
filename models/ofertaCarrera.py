@@ -354,3 +354,4 @@ if __name__ == "__main__":
     
     print(f"\n Total ofertas creadas: {OfertaCarrera.obtener_total_ofertas()}")
     print("\n" + "=" * 70)
+
