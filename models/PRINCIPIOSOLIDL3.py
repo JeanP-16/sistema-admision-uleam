@@ -10,8 +10,8 @@ VIOLACIONES:
 - D (DIP): Dependencias directas de implementaciones concretas
 
 Autores: Jean Pierre Flores Piloso, 
-         Braddy Londre Vera, 
-         Bismark Grabriel Cevallos
+         Braddy Londre Vera Anchundia, 
+         Bismark Grabriel Cevallos Cedeño
 """
 #. Liskov Substitution Principle (LSP) - Principio de Sustitución de Liskov
 #"Las subclases deben ser sustituibles por sus clases base".
