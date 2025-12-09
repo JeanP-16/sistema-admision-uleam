@@ -12,8 +12,8 @@ VIOLACIÓN OCP:
 - Código cerrado para extensión
 
 Autores: Jean Pierre Flores Piloso, 
-         Braddy Londre Vera, 
-         Bismark Grabriel Cevallos
+         Braddy Londre Vera Anchundia, 
+         Bismark Grabriel Cevallos Cedeño
 Fecha: Noviembre 2025
 """
 #2. Open/Closed Principle (OCP) - Principio de Abierto/Cerrado
