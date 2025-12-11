@@ -1,751 +1,401 @@
 """
-Sistema de Admision ULEAM 
-Autor: Equipo 3ro TI "C" - Jean Pierre, Braddy, Bismark
+Módulo: PRINCIPIOSOLIDS - RegistroNacional REFACTORIZADO
+Autores: Jean Pierre Flores Piloso, Braddy Londre Vera, Bismark Gabriel Cevallos
 Fecha: Diciembre 2025
+Descripción: Versión BUENA que aplica el Principio S (SRP - Single Responsibility Principle)
 
-Este main usa las clases de los archivos de PRINCIPIOS SOLID (VERSIONES BUENAS):
+PRINCIPIO S (SRP) - SINGLE RESPONSIBILITY PRINCIPLE:
+"Una clase debe tener una sola razón para cambiar"
 
- - S (SRP): RegistroNacional  -> models/RegistroNacional.py
- - O (OCP): Postulante        -> models/Postulante.py
- - L (LSP): SedeCampus        -> models/SedeCampus.py
- - I (ISP): Interfaces demo   -> models/PRINCIPIOSOLIDI4.py
- - D (DIP): Inscripcion (demo)-> models/PRINCIPIOSOLIDD5.py
-
-Y además muestra CÓDIGOS MALOS para comparar:
-
- - OCP MALO:  models/PRINCIPIOSOLIDO.py        (Postulante malo)
- - LSP MALO:  models/PRINCIPIOSOLIDL3.py       (SedeCampus malo)
- - ISP BUENO: models/PRINCIPIOSOLIDI4.py       (OfertaCarrera con interfaces)
- - DIP BUENO: models/PRINCIPIOSOLIDD5.py       (Inscripcion con inyección)
+REFACTORIZACIÓN APLICADA:
+- Separamos DatosPersonales en su propia clase
+- Creamos interfaz Validable para validaciones
+- RegistroNacional ahora hereda de ambas usando herencia múltiple
+- Cada clase tiene UNA responsabilidad específica
 """
 
-from datetime import datetime, timedelta
-
-# ================== PRINCIPIOS SOLID (CLASES BUENAS) ==================
-from models.RegistroNacional import RegistroNacional          # S (SRP)
-from models.Postulante import Postulante                      # O (OCP)
-from models.SedeCampus import SedeCampus                      # L (LSP)
-import models.PRINCIPIOSOLIDI4 as PRINCIPIOSOLIDI4           # I (ISP) - demo bueno
-import models.PRINCIPIOSOLIDD5 as PRINCIPIOSOLIDD5           # D (DIP) - demo bueno
-
-# ================== DEMOS CÓDIGO MALO / COMPARACIÓN ==================
-# Postulante MALO (VIOLA OCP)
-from models.PRINCIPIOSOLIDO import Postulante as PostulanteMALO
-
-# SedeCampus MALO (VIOLA varios principios, incluido LSP)
-from models.PRINCIPIOSOLIDL3 import SedeCampus as SedeCampusMALO
-
-# =============== MODELOS DEL SISTEMA REAL ===============
-from models.ofertaCarrera import OfertaCarrera          # Clase real usada en el sistema
-from models.Inscripcion import Inscripcion              # Inscripcion REAL del menú
-from models.Evaluacion import Evaluacion
-from models.Asignacion import Asignacion
-from models.PuntajePostulacion import PuntajePostulacion
-
-
-# ==================== ALMACENAMIENTO GLOBAL ====================
-sedes_disponibles = []
-ofertas_disponibles = []
-registros_nacionales = []
-postulantes_creados = []
-inscripciones_creadas = []
-evaluaciones_creadas = []
-asignaciones_creadas = []
-puntajes_creados = []
-
-
-# ==================== INICIALIZACIÓN DE DATOS ====================
-def inicializar_sistema():
-    """Inicializa el sistema con datos reales de ULEAM"""
-    global sedes_disponibles, ofertas_disponibles, registros_nacionales
-
-    import sys
-    import io
-
-    # Redirigir stdout temporalmente por si las clases imprimen algo al crearse
-    old_stdout = sys.stdout
-    sys.stdout = io.StringIO()
-
-    try:
-        # ----- SEDES (USA SedeCampus BUENA) -----
-        # La clase SedeCampus BUENA solo recibe el ID de la sede.
-        sede_matriz = SedeCampus(1)
-        sede_chone = SedeCampus(2)
-        sede_el_carmen = SedeCampus(3)
-        sede_pedernales = SedeCampus(4)
-        sede_bahia = SedeCampus(5)
-        sede_tosagua = SedeCampus(6)
-        sede_santo_domingo = SedeCampus(7)
-        sede_flavio_alfaro = SedeCampus(8)
-        sede_pichincha = SedeCampus(9)
-
-        sedes_disponibles = [
-            sede_matriz,
-            sede_chone,
-            sede_el_carmen,
-            sede_pedernales,
-            sede_bahia,
-            sede_tosagua,
-            sede_santo_domingo,
-            sede_flavio_alfaro,
-            sede_pichincha
-        ]
-
-        # ----- OFERTAS ACADEMICAS (USA OfertaCarrera REAL) -----
-        oferta_ti_matriz = OfertaCarrera(
-            carrera_id=101,
-            nombre_carrera="Tecnologias de la Informacion",
-            sede_id=sede_matriz.sede_id,
-            nombre_sede=sede_matriz.nombre_sede,
-            cupos_total=40,
-            nivel="TERCER NIVEL",
-            modalidad="PRESENCIAL",
-            jornada="MATUTINA"
-        )
-
-        oferta_software_matriz = OfertaCarrera(
-            carrera_id=102,
-            nombre_carrera="Ingenieria en Software",
-            sede_id=sede_matriz.sede_id,
-            nombre_sede=sede_matriz.nombre_sede,
-            cupos_total=35,
-            nivel="TERCER NIVEL",
-            modalidad="PRESENCIAL",
-            jornada="VESPERTINA"
-        )
-
-        oferta_medicina_matriz = OfertaCarrera(
-            carrera_id=103,
-            nombre_carrera="Medicina",
-            sede_id=sede_matriz.sede_id,
-            nombre_sede=sede_matriz.nombre_sede,
-            cupos_total=25,
-            nivel="TERCER NIVEL",
-            modalidad="PRESENCIAL",
-            jornada="MATUTINA"
-        )
-
-        oferta_admin_chone = OfertaCarrera(
-            carrera_id=104,
-            nombre_carrera="Administracion de Empresas",
-            sede_id=sede_chone.sede_id,
-            nombre_sede=sede_chone.nombre_sede,
-            cupos_total=30,
-            nivel="TERCER NIVEL",
-            modalidad="PRESENCIAL",
-            jornada="NOCTURNA"
-        )
-
-        ofertas_disponibles = [
-            oferta_ti_matriz,
-            oferta_software_matriz,
-            oferta_medicina_matriz,
-            oferta_admin_chone
-        ]
-
-        # ----- REGISTROS NACIONALES (USA RegistroNacional BUENO - SRP) -----
-        registro1 = RegistroNacional(
-            identificacion="1316202082",
-            nombres="JEAN PIERRE",
-            apellidos="FLORES PILOSO"
-        )
-        registro1.completar_datos_personales("2007-05-15", "HOMBRE", "MESTIZO")
-        registro1.completar_ubicacion("MANABI", "MANTA", "MANTA", "LOS ESTEROS", "AV. 24 DE MAYO")
-        registro1.completar_contacto("0999999999", "florespilosojeanpierre@gmail.com")
-        registro1.completar_datos_academicos("U.E. MANTA", "FISCAL", 9.5, "SI")
-        registro1.validar_completitud()
-
-        registro2 = RegistroNacional(
-            identificacion="1350432058",
-            nombres="BRADDY LONDRE",
-            apellidos="VERA ANCHUNDIA"
-        )
-        registro2.completar_datos_personales("2007-03-20", "HOMBRE", "MONTUBIO")
-        registro2.completar_ubicacion("MANABI", "CHONE", "CHONE", "CENTRO", "CALLE PRINCIPAL")
-        registro2.completar_contacto("0988888888", "braddy.vera@uleam.edu.ec")
-        registro2.completar_datos_academicos("U.E. CHONE", "FISCAL", 9.0, "NO")
-        registro2.validar_completitud()
-
-        registro3 = RegistroNacional(
-            identificacion="1360234567",
-            nombres="BISMARK GABRIEL",
-            apellidos="CEVALLOS CEDEÑO"
-        )
-        registro3.completar_datos_personales("2007-07-10", "HOMBRE", "MESTIZO")
-        registro3.completar_ubicacion("MANABI", "MANTA", "MANTA", "TARQUI", "CALLE 10")
-        registro3.completar_contacto("0977777777", "bismark.cevallos@uleam.edu.ec")
-        registro3.completar_datos_academicos("U.E. MANTA", "FISCAL", 9.2, "NO")
-        registro3.validar_completitud()
-
-        registros_nacionales = [registro1, registro2, registro3]
-
-    finally:
-        # restaurar stdout
-        sys.stdout = old_stdout
-
-
-# ==================== FUNCIONES PRINCIPALES (SISTEMA REAL) ====================
-
-def ver_sedes():
-    """Opcion 1: Ver sedes disponibles"""
-    print("\n" + "=" * 60)
-    print("SEDES ULEAM DISPONIBLES")
-    print("=" * 60)
-
-    for sede in sedes_disponibles:
-        print(f"\nSede:   {sede.nombre_sede}")
-        print(f"Codigo: {sede.sede_id}")
-
-    print(f"\nTotal de sedes: {len(sedes_disponibles)}")
-
-
-def ver_ofertas_carreras():
-    """Opcion 2: Ver ofertas de carreras reales"""
-    print("\n" + "=" * 60)
-    print("OFERTAS ACADEMICAS ULEAM - PERIODO 2025-1")
-    print("=" * 60)
-
-    for i, oferta in enumerate(ofertas_disponibles, 1):
-        print(f"\n[{i}] {oferta.nombre_carrera}")
-        print(f"   Sede:     {oferta.nombre_sede}")
-        print(f"   Cupos:    {oferta.cupos_total}")
-        print(f"   Nivel:    {oferta.nivel}")
-        print(f"   Jornada:  {oferta.jornada}")
-        print(f"   Modalidad:{oferta.modalidad}")
-
-
-def verificar_registro_nacional():
-    """Opcion 3: Verificar registro nacional por cédula"""
-    print("\n" + "=" * 60)
-    print("VERIFICAR REGISTRO NACIONAL")
-    print("=" * 60)
-
-    cedula = input("\nIngrese numero de cedula: ").strip()
-
-    registro = next((r for r in registros_nacionales
-                     if r.identificacion == cedula), None)
-
-    if registro:
-        print("\nREGISTRO ENCONTRADO:")
-        print(f"Cedula:           {registro.identificacion}")
-        print(f"Nombres:          {registro.nombres} {registro.apellidos}")
-        print(f"Estado:           {registro.estado}")
-        print(f"Unidad Educativa: {registro.unidad_educativa}")
-        print(f"Tipo Unidad:      {registro.tipo_unidad_educativa}")
-        print(f"Calificacion:     {registro.calificacion}")
-        print(f"Provincia:        {registro.provincia_reside}")
-        print(f"Canton:           {registro.canton_reside}")
-        print(f"Correo:           {registro.correo}")
-        print(f"Celular:          {registro.celular}")
-    else:
-        print(f"\nNo se encontro registro con cedula: {cedula}")
-
-
-def ver_todos_registros():
-    """Opcion 4: Ver todos los registros nacionales cargados"""
-    print("\n" + "=" * 60)
-    print("LISTA DE REGISTROS NACIONALES CARGADOS")
-    print("=" * 60)
-
-    for i, registro in enumerate(registros_nacionales, 1):
-        print(f"\n[{i}] Cedula: {registro.identificacion}")
-        print(f"Nombre: {registro.nombres} {registro.apellidos}")
-        print(f"Estado: {registro.estado}")
-        print("-" * 60)
-
-    print(f"\nTotal de registros: {len(registros_nacionales)}")
-
-
-def crear_inscripcion():
-    """Opcion 5: Crear inscripcion (GENERA EVALUACION AUTOMATICAMENTE)"""
-    print("\n" + "=" * 60)
-    print("CREAR INSCRIPCION")
-    print("=" * 60)
-
-    cedula = input("\nIngrese numero de cedula: ").strip()
-
-    registro = next((r for r in registros_nacionales
-                     if r.identificacion == cedula), None)
-
-    if not registro:
-        print(f"\nError: No existe registro nacional con cedula {cedula}")
-        return
-
-    if registro.estado != "COMPLETO":
-        print(f"\nError: El registro debe estar COMPLETO. "
-              f"Estado actual: {registro.estado}")
-        return
-
-    print(f"\nRegistro encontrado: {registro.nombres} {registro.apellidos}")
-
-    nombre_completo = f"{registro.nombres} {registro.apellidos}"
-    email = getattr(registro, "correo", "sin_correo@uleam.edu.ec")
-    telefono = getattr(registro, "celular", "0000000000")
-
-    # La edad y validaciones ya están en RegistroNacional; aquí solo usamos la fecha
-    fecha_nac_str = "2000-01-01"  # valor por defecto por si no estuviera cargada
-
-    # Postulante viene de Postulante.py (OCP BUENO)
-    postulante = Postulante(
-        cedula=registro.identificacion,
-        nombre_completo=nombre_completo,
-        email=email,
-        telefono=telefono,
-        fecha_nacimiento=fecha_nac_str
-    )
-
-    postulantes_creados.append(postulante)
-    print(f"Postulante creado exitosamente (ID: {postulante.id_postulante})")
-
-    print("\nCARRERAS DISPONIBLES:")
-    for i, oferta in enumerate(ofertas_disponibles, 1):
-        print(f"{i}. {oferta.nombre_carrera} - "
-              f"{oferta.nombre_sede} ({oferta.jornada})")
-
-    try:
-        opcion_carrera = int(
-            input("\nSeleccione carrera (1-{0}): "
-                  .format(len(ofertas_disponibles)))
-        )
-        if opcion_carrera < 1 or opcion_carrera > len(ofertas_disponibles):
-            print("Opcion invalida")
-            return
-    except ValueError:
-        print("Entrada invalida")
-        return
-
-    oferta_seleccionada = ofertas_disponibles[opcion_carrera - 1]
-
-    try:
-        orden_pref = int(input("Ingrese orden de preferencia (1-3): "))
-    except ValueError:
-        print("Entrada invalida")
-        return
-
-    # Inscripcion REAL del sistema (models.Inscripcion)
-    inscripcion = Inscripcion(
-        id_postulante=postulante.id_postulante,
-        carrera_id=oferta_seleccionada.carrera_id,
-        orden_preferencia=orden_pref,
-        sede_id=oferta_seleccionada.sede_id,
-        jornada=oferta_seleccionada.jornada,
-        cedula_postulante=cedula
-    )
-
-    inscripciones_creadas.append(inscripcion)
-
-    evaluacion = inscripcion.obtenerEvaluacion()
-    if evaluacion:
-        evaluaciones_creadas.append(evaluacion)
-
-    print("\n" + "=" * 60)
-    print("INSCRIPCION CREADA EXITOSAMENTE")
-    print("=" * 60)
-    inscripcion.mostrar_info_completa()
-
-    print("\nPROXIMOS PASOS:")
-    print("1. Presente su documento de identidad el dia del examen")
-    print("2. Llegue 30 minutos antes de la hora programada")
-    print("3. Consulte su evaluacion con la opcion 6")
-
-
-def consultar_evaluacion():
-    """Opcion 6: Consultar evaluación por cedula"""
-    print("\n" + "=" * 60)
-    print("CONSULTAR EVALUACION")
-    print("=" * 60)
-
-    cedula = input("\nIngrese numero de cedula: ").strip()
-
-    evaluacion = next((e for e in evaluaciones_creadas
-                       if e.cedula_postulante == cedula), None)
-
-    if evaluacion:
-        evaluacion.mostrar_info()
-    else:
-        print("\nNo hay evaluacion asociada a esta inscripcion")
-
-
-def consultar_asignacion():
-    """Opcion 7: Consultar asignacion por cedula"""
-    print("\n" + "=" * 60)
-    print("CONSULTAR ASIGNACION")
-    print("=" * 60)
-
-    cedula = input("\nIngrese numero de cedula: ").strip()
-
-    asignacion = next((a for a in asignaciones_creadas
-                       if a.cedula_postulante == cedula), None)
-
-    if asignacion:
-        asignacion.mostrar_info()
-    else:
-        print(f"\nNo se encontro asignacion con cedula: {cedula}")
-        print("\n📅 Su examen aún no se ha realizado o está pendiente de "
-              "calificación.")
-        print("   Espere hasta la fecha programada para conocer su resultado "
-              "y asignación de cupo.")
-        print("   Puede revisar su fecha de examen con la opcion 6 del menú.")
-
-
-def consultar_puntaje():
-    """Opcion 8: Consultar puntaje por cedula"""
-    print("\n" + "=" * 60)
-    print("CONSULTAR PUNTAJE DE POSTULACION")
-    print("=" * 60)
-
-    cedula = input("\nIngrese numero de cedula: ").strip()
-
-    puntaje = next((p for p in puntajes_creados
-                    if p.cedula_postulante == cedula), None)
-
-    if puntaje:
-        puntaje.mostrar_resumen()
-    else:
-        print(f"\nNo se encontro puntaje con cedula: {cedula}")
-
-
-def simular_proceso_completo():
-    """Opcion 9: Simular proceso completo de admision (DEMO)"""
-    print("\n" + "=" * 60)
-    print("SIMULACION COMPLETA DE PROCESO DE ADMISION")
-    print("=" * 60)
-
-    if not registros_nacionales:
-        print("No hay registros cargados. Inicializando sistema...")
-        inicializar_sistema()
-
-    registro = registros_nacionales[0]
-    cedula = registro.identificacion
-
-    print(f"\nUsando registro de: {registro.nombres} {registro.apellidos} "
-          f"(Cédula: {cedula})")
-
-    nombre_completo = f"{registro.nombres} {registro.apellidos}"
-    email = getattr(registro, "correo", "sin_correo@uleam.edu.ec")
-    telefono = getattr(registro, "celular", "0000000000")
-
-    fecha_nac_str = "2000-01-01"
-
-    postulante = Postulante(
-        cedula=registro.identificacion,
-        nombre_completo=nombre_completo,
-        email=email,
-        telefono=telefono,
-        fecha_nacimiento=fecha_nac_str
-    )
-    postulantes_creados.append(postulante)
-
-    oferta = ofertas_disponibles[0]
-
-    inscripcion = Inscripcion(
-        id_postulante=postulante.id_postulante,
-        carrera_id=oferta.carrera_id,
-        orden_preferencia=1,
-        sede_id=oferta.sede_id,
-        jornada=oferta.jornada,
-        cedula_postulante=cedula
-    )
-    inscripciones_creadas.append(inscripcion)
-
-    evaluacion = inscripcion.obtenerEvaluacion()
-    evaluaciones_creadas.append(evaluacion)
-
-    print("\n1. Inscripcion y evaluacion generadas automaticamente")
-
-    calificacion_evaluacion = 850.0
-    evaluacion.registrarCalificacion(calificacion_evaluacion)
-    print(f"\n2. Evaluacion calificada: {calificacion_evaluacion} puntos")
-
-    puntaje = PuntajePostulacion(
-        id_postulante=postulante.id_postulante,
-        nota_grado=registro.calificacion,
-        puntaje_evaluacion=calificacion_evaluacion,
-        cedula_postulante=cedula,
-        puntaje_meritos=100.0
-    )
-    puntajes_creados.append(puntaje)
-    print(f"\n3. Puntaje calculado: {puntaje.puntaje_final}/1000")
-
-    asignacion = Asignacion(
-        id_postulante=postulante.id_postulante,
-        carrera_id=oferta.carrera_id,
-        sede_id=oferta.sede_id,
-        puntaje_final=puntaje.puntaje_final,
-        cedula_postulante=cedula
-    )
-    asignaciones_creadas.append(asignacion)
-    print(f"\n4. Asignacion creada (ID: {asignacion.id_asignacion})")
-
-    asignacion.confirmar()
-    print(f"\n5. Asignacion confirmada")
-
-    print("\n" + "=" * 60)
-    print("PROCESO COMPLETADO EXITOSAMENTE")
-    print("=" * 60)
-    print(f"\nPuede consultar toda la informacion con la cedula: {cedula}")
-    print("Use las opciones 6, 7 y 8 del menu")
-
-
-# ==================== DEMOS SOLID (BUENOS Y MALOS) ====================
-
-def demo_postulante_ocp_malo():
-    """Opcion 10: Demostración de Postulante MALO (viola OCP)"""
-    print("\n" + "=" * 80)
-    print("DEMOSTRACIÓN: PRINCIPIO O (OCP) - CÓDIGO MALO (PRINCIPIOSOLIDO)")
-    print("=" * 80)
-
-    # 1. POSTULANTE REGULAR
-    print("\n1. POSTULANTE REGULAR:")
-    p1 = PostulanteMALO("1234567890", "Juan Pérez", "juan@mail.com",
-                        "0987654321", "1995-05-15", tipo='REGULAR')
-    p1.validarIdentidad()
-    print(f"   ¿Puede inscribirse? {p1.puede_inscribirse()}")
-
-    # 2. POSTULANTE MENOR
-    print("\n2. POSTULANTE MENOR:")
-    p2 = PostulanteMALO("9876543210", "María López", "maria@mail.com",
-                        "0912345678", "2008-03-20", tipo='MENOR')
-    p2.validarIdentidad()  # Rechazado - falta tutor
-    p2.registrar_tutor("Pedro López", "1111111111")
-    p2.validarIdentidad()  # Verificado
-    print(f"   ¿Puede inscribirse? {p2.puede_inscribirse()}")
-
-    # 3. POSTULANTE EXTRANJERO
-    print("\n3. POSTULANTE EXTRANJERO:")
-    p3 = PostulanteMALO("PASS123456", "John Smith", "john@mail.com",
-                        "0998877665", "1990-07-10", tipo='EXTRANJERO')
-    p3.validarIdentidad()  # Rechazado - falta homologación
-    p3.marcar_titulo_homologado()
-    p3.validarIdentidad()  # Verificado
-    print(f"   ¿Puede inscribirse? {p3.puede_inscribirse()}")
-
-    print("\n" + "=" * 80)
-    print("PROBLEMAS DE ESTE CÓDIGO (para explicar OCP):")
-    print("- Usa if/elif por cada tipo de postulante.")
-    print("- Para agregar un nuevo tipo → hay que MODIFICAR la clase.")
-    print("- La clase tiene atributos de todos los tipos (REGULAR, MENOR, EXTRANJERO, CON_CUPO).")
-    print("=" * 80)
-
-
-def demo_sede_lsp_malo():
-    """Opcion 11: Demostración de SedeCampus MALO (viola varios principios, LSP)"""
-    print("\n" + "=" * 80)
-    print("DEMOSTRACIÓN: CÓDIGO MALO - SEDE CAMPUS (PRINCIPIOSOLIDL3)")
-    print("=" * 80)
-
-    # Crear sede principal
-    print("\n1. SEDE PRINCIPAL:")
-    sede1 = SedeCampusMALO("SEDE-001", "Campus Central Manta", tipo_sede='PRINCIPAL')
-    sede1.establecer_ubicacion("MANABÍ", "MANTA", "Av. Principal 123")
-    sede1.agregar_edificio("Edificio A")
-    sede1.agregar_aula("A-101", 40)
-    sede1.agregar_aula("A-102", 35)
-    sede1.agregar_carrera("Ingeniería en Sistemas")
-    sede1.agregar_carrera("Medicina")
-    sede1.agregar_personal("Dr. Juan Pérez", "DIRECTOR")
-    sede1.inscribir_estudiante("María López")
-    sede1.validar_sede()
-
-    # Crear sede extensión
-    print("\n2. SEDE EXTENSIÓN:")
-    sede2 = SedeCampusMALO("SEDE-002", "Extensión Pedernales", tipo_sede='EXTENSION')
-    sede2.establecer_ubicacion("MANABÍ", "PEDERNALES", "Calle Principal")
-    sede2.agregar_edificio("Edificio B")  # No debería poder
-    sede2.agregar_carrera("Administración")  # Permitida
-    sede2.agregar_carrera("Medicina")        # No permitida en extensión
-
-    # Crear sede virtual
-    print("\n3. SEDE VIRTUAL:")
-    sede3 = SedeCampusMALO("SEDE-003", "Campus Virtual", tipo_sede='VIRTUAL')
-    sede3.agregar_carrera("Marketing Digital")
-    sede3.agregar_edificio("Edificio C")  # Virtual no tiene edificios
-
-    # Generar reporte de la sede 1
-    print("\n4. REPORTE COMPLETO SEDE PRINCIPAL:")
-    sede1.generar_reporte_completo()
-
-    print("\n" + "=" * 80)
-    print("PROBLEMAS DE ESTE CÓDIGO (para explicar LSP / SRP / OCP / DIP):")
-    print("- Una sola clase maneja carreras, infraestructura, personal, ubicación, estudiantes, BD, notificaciones.")
-    print("- Usa muchos if/elif según tipo de sede (PRINCIPAL, EXTENSION, VIRTUAL).")
-    print("- Depende directamente de MySQL, Email, etc. (viola DIP).")
-    print("=" * 80)
-
-
-def demo_isp_oferta_carrera():
-    """Opcion 12: Demostración PRINCIPIO I (ISP) con carreras"""
-    print("\n" + "=" * 80)
-    print("DEMOSTRACIÓN: PRINCIPIO I (ISP) - CÓDIGO BUENO (PRINCIPIOSOLIDI4)")
-    print("=" * 80)
-
-    CarreraBasica = PRINCIPIOSOLIDI4.CarreraBasica
-    CarreraConCupos = PRINCIPIOSOLIDI4.CarreraConCupos
-    CarreraConModalidades = PRINCIPIOSOLIDI4.CarreraConModalidades
-    CarreraCompleta = PRINCIPIOSOLIDI4.CarreraCompleta
-
-    # 1. Carrera básica
-    print("\n1. CARRERA BÁSICA (solo interfaz básica):")
-    carrera1 = CarreraBasica("001", "Filosofía")
-    print(f"   {carrera1.obtener_informacion()}")
-    print(f"   ¿Disponible? {carrera1.esta_disponible()}")
-
-    # 2. Carrera con cupos
-    print("\n2. CARRERA CON CUPOS:")
-    carrera2 = CarreraConCupos("002", "Medicina", cupos_totales=50)
-    print(f"   {carrera2.obtener_informacion()}")
-    carrera2.verificar_cupos_disponibles()
-    carrera2.asignar_cupo("Juan Pérez")
-    carrera2.asignar_cupo("María López")
-    carrera2.verificar_cupos_disponibles()
-
-    # 3. Carrera con modalidades
-    print("\n3. CARRERA CON MODALIDADES:")
-    carrera3 = CarreraConModalidades("003", "Administración")
-    carrera3.agregar_modalidad("PRESENCIAL")
-    carrera3.agregar_modalidad("SEMIPRESENCIAL")
-    carrera3.agregar_modalidad("EN LÍNEA")
-    carrera3.listar_modalidades()
-
-    # 4. Carrera completa
-    print("\n4. CARRERA COMPLETA (todas las interfaces):")
-    carrera4 = CarreraCompleta("004", "Ingeniería en Sistemas", cupos_totales=100)
-    print(f"   {carrera4.obtener_informacion()}")
-    carrera4.agregar_modalidad("PRESENCIAL")
-    carrera4.agregar_horario("MATUTINO")
-    carrera4.agregar_horario("VESPERTINO")
-    print(f"   ¿Requiere nivelación? {carrera4.requiere_nivelacion()}")
-    carrera4.asignar_nivel("Pedro García", "NIVEL 1")
-
-    print("\n" + "=" * 80)
-    print("VENTAJAS ISP:")
-    print("- Cada clase implementa SOLO las interfaces que necesita.")
-    print("- No obligamos a implementar métodos que no usan.")
-    print("- Fácil agregar nuevas interfaces sin romper código existente.")
-    print("=" * 80)
-
-
-def demo_dip_inscripcion():
-    """Opcion 13: Demostración PRINCIPIO D (DIP) con Inscripcion"""
-    print("\n" + "=" * 80)
-    print("DEMOSTRACIÓN: PRINCIPIO D (DIP) - CÓDIGO BUENO (PRINCIPIOSOLIDD5)")
-    print("=" * 80)
-
-    # Configuración 1: MySQL + Gmail
-    print("\n1. CONFIGURACIÓN: MySQL + Gmail")
-    bd_mysql = PRINCIPIOSOLIDD5.BaseDatosMySQL()
-    email_gmail = PRINCIPIOSOLIDD5.ServicioGmail()
-
-    inscripcion1 = PRINCIPIOSOLIDD5.Inscripcion(
-        postulante="Juan Pérez",
-        carrera="Ingeniería en Sistemas",
-        periodo="2025-1",
-        base_datos=bd_mysql,
-        servicio_email=email_gmail
-    )
-    inscripcion1.procesar_inscripcion()
-
-    # Configuración 2: PostgreSQL + Outlook
-    print("\n2. CONFIGURACIÓN: PostgreSQL + Outlook")
-    bd_postgres = PRINCIPIOSOLIDD5.BaseDatosPostgreSQL()
-    email_outlook = PRINCIPIOSOLIDD5.ServicioOutlook()
-
-    inscripcion2 = PRINCIPIOSOLIDD5.Inscripcion(
-        postulante="María López",
-        carrera="Medicina",
-        periodo="2025-1",
-        base_datos=bd_postgres,
-        servicio_email=email_outlook
-    )
-    inscripcion2.procesar_inscripcion()
-
-    print("\n" + "=" * 80)
-    print("VENTAJAS DIP:")
-    print("- Inscripcion depende de ABSTRACCIONES (InterfazBaseDatos, InterfazEmail).")
-    print("- Podemos cambiar MySQL ↔ PostgreSQL, Gmail ↔ Outlook sin tocar la clase Inscripcion.")
-    print("- Fácil de testear con mocks (inyección de dependencias).")
-    print("=" * 80)
-
-
-# ==================== MENÚ PRINCIPAL ====================
-
-def mostrar_menu():
-    """Muestra el menu principal"""
-    print("\n" + "=" * 60)
-    print("MENU PRINCIPAL - SISTEMA ULEAM (CON PRINCIPIOS SOLID)")
-    print("=" * 60)
-    print("1. Ver Sedes Disponibles")
-    print("2. Ver Ofertas de Carreras Reales")
-    print("3. Verificar Registro Nacional por Cédula")
-    print("4. Ver Todos los Registros Nacionales")
-    print("5. Crear Inscripcion")
-    print("6. Consultar Evaluacion por Cedula")
-    print("7. Consultar Asignacion por Cedula")
-    print("8. Consultar Puntaje por Cedula")
-    print("9. Simular Proceso Completo (DEMO)")
-    print("-" * 60)
-    print("10. DEMO OCP - Postulante (codigo MALO)")
-    print("11. DEMO LSP - SedeCampus (codigo MALO)")
-    print("12. DEMO ISP - OfertaCarrera (codigo BUENO)")
-    print("13. DEMO DIP - Inscripcion (codigo BUENO)")
-    print("0. Salir")
-    print("=" * 60)
-
-
-def main():
-    inicializar_sistema()
-
-    while True:
-        try:
-            mostrar_menu()
-            opcion = input("\nSeleccione una opcion: ").strip()
-
-            if opcion == '1':
-                ver_sedes()
-            elif opcion == '2':
-                ver_ofertas_carreras()
-            elif opcion == '3':
-                verificar_registro_nacional()
-            elif opcion == '4':
-                ver_todos_registros()
-            elif opcion == '5':
-                crear_inscripcion()
-            elif opcion == '6':
-                consultar_evaluacion()
-            elif opcion == '7':
-                consultar_asignacion()
-            elif opcion == '8':
-                consultar_puntaje()
-            elif opcion == '9':
-                simular_proceso_completo()
-            elif opcion == '10':
-                demo_postulante_ocp_malo()
-            elif opcion == '11':
-                demo_sede_lsp_malo()
-            elif opcion == '12':
-                demo_isp_oferta_carrera()
-            elif opcion == '13':
-                demo_dip_inscripcion()
-            elif opcion == '0':
-                print("\nGracias por usar el Sistema de Admision ULEAM")
-                print("\nPrincipios SOLID aplicados (version BUENA en el sistema):")
-                print(" - S (SRP): RegistroNacional  -> models/RegistroNacional.py")
-                print(" - O (OCP): Postulante        -> models/Postulante.py")
-                print(" - L (LSP): SedeCampus        -> models/SedeCampus.py")
-                print(" - I (ISP): Interfaces demo   -> models/PRINCIPIOSOLIDI4.py")
-                print(" - D (DIP): Inscripcion (demo)-> models/PRINCIPIOSOLIDD5.py")
-                print("\nY se mostraron códigos MALOS para comparación en opciones 10–13.")
-                break
+from datetime import datetime
+from typing import Optional
+from abc import ABC, abstractmethod
+
+
+# ===== CLASE BASE 1: DATOS PERSONALES =====
+class DatosPersonales:
+    """
+    Responsabilidad ÚNICA: Manejar datos personales básicos
+    Aplica SRP: Solo gestiona información de identificación
+    """
+    
+    def __init__(self, identificacion: str, nombres: str, apellidos: str):
+        self.identificacion = identificacion
+        self.nombres = nombres
+        self.apellidos = apellidos
+    
+    def obtener_nombre_completo(self) -> str:
+        """Retorna el nombre completo del postulante"""
+        return f"{self.nombres} {self.apellidos}"
+
+
+# ===== INTERFAZ (CLASE ABSTRACTA): VALIDABLE =====
+class Validable(ABC):
+    """
+    Responsabilidad ÚNICA: Definir el contrato de validación
+    Aplica SRP: Solo define qué debe validarse, no cómo
+    """
+    
+    @abstractmethod
+    def validar_completitud(self) -> bool:
+        """Método abstracto que debe implementar toda clase validable"""
+        pass
+
+
+# ===== CLASE PRINCIPAL: REGISTRO NACIONAL =====
+class RegistroNacional(DatosPersonales, Validable):
+    """
+    Gestiona el Registro Nacional completo del postulante
+    
+    APLICA SRP mediante:
+    - Herencia múltiple: combina DatosPersonales + Validable
+    - Cada clase padre tiene UNA responsabilidad
+    - Esta clase SOLO coordina y gestiona el registro
+    
+    ANTES (MALO):
+    - Una clase gigante con 700+ líneas
+    - Manejaba datos personales, ubicación, contacto, académicos, validación, etc.
+    
+    AHORA (BUENO):
+    - Responsabilidades separadas en clases distintas
+    - Fácil de mantener y extender
+    - Cada cambio afecta solo a una clase
+    """
+    
+    _contador = 0
+    _registros_db = {}
+    
+    ESTADOS_REGISTRO = ['COMPLETO', 'INCOMPLETO']
+    ESTADOS_HABILITACION = ['HABILITADO', 'NO HABILITADO', 'CONDICIONADO']
+    
+    def __init__(self, identificacion: str, nombres: str, apellidos: str):
+        # Llamar al constructor de DatosPersonales
+        super().__init__(identificacion, nombres, apellidos)
+        
+        RegistroNacional._contador += 1
+        
+        # Tipo de documento
+        self.tipo_documento = 'CEDULA' if identificacion.isdigit() else 'PASAPORTE'
+        self.nacionalidad = 'ECUATORIANA'
+        self.codigo_nacionalidad = 218
+        
+        # Datos personales adicionales
+        self.fecha_nacimiento = None
+        self.estado_civil = 'S'
+        self.sexo = None
+        self.genero = None
+        self.autoidentificacion = None
+        self.pueblo_indigena = None
+        self.edad = None
+        
+        # Discapacidad
+        self.carnet_discapacidad = None
+        self.tipo_discapacidad = None
+        self.porcentaje_discapacidad = 0
+        self.requiere_apoyo = None
+        
+        # Persona de apoyo
+        self.identificacion_apoyo = None
+        self.nombres_apoyo = None
+        self.correo_apoyo = None
+        
+        # Ubicación
+        self.pais_reside = 'ECUADOR'
+        self.provincia_reside = None
+        self.canton_reside = None
+        self.parroquia_reside = None
+        self.barrio_sector = None
+        self.calle_principal = None
+        
+        # Contacto
+        self.celular = None
+        self.correo = None
+        
+        # Recursos tecnológicos
+        self.internet_domicilio = 'NO'
+        self.computadora_domicilio = 'NO'
+        self.camara_web = 'NO'
+        
+        # Representante legal (para menores)
+        self.tipo_doc_rep_legal = None
+        self.numero_doc_rep_legal = None
+        self.nombre_rep_legal = None
+        self.celular_rep_legal = None
+        self.email_rep_legal = None
+        
+        # Datos académicos
+        self.titulo_homologado = 'NO'
+        self.unidad_educativa = None
+        self.tipo_unidad_educativa = None
+        self.calificacion = None
+        self.cuadro_honor = 'NO'
+        self.ubicacion_cuadro_honor = None
+        self.distincion_cuadro_honor = None
+        
+        self.titulo_tercer_nivel = 'NO'
+        self.titulo_cuarto_nivel = 'NO'
+        
+        # Estado del registro
+        self.fecha_registro_nacional = datetime.now()
+        self.estado = 'INCOMPLETO'
+        self.tipo_poblacion = None
+        self.ppl = 'NO'
+        self.nombre_centro_ppl = None
+        self.acepta_cupo_anterior = 'NO'
+        self.estado_registro_nacional = 'NO HABILITADO'
+        
+        # Observaciones
+        self.observacion_estado = None
+        self.observacion_poblacion = None
+        self.observacion_acepta_cupo = None
+        
+        # Guardar en BD simulada
+        RegistroNacional._registros_db[identificacion] = self
+    
+    def calcular_edad(self):
+        """Calcula la edad del postulante"""
+        if self.fecha_nacimiento:
+            if isinstance(self.fecha_nacimiento, str):
+                fecha_nac = datetime.strptime(self.fecha_nacimiento, "%Y-%m-%d")
             else:
-                print("\nOpcion invalida. Intente nuevamente.")
+                fecha_nac = self.fecha_nacimiento
+            
+            hoy = datetime.now()
+            self.edad = hoy.year - fecha_nac.year - ((hoy.month, hoy.day) < (fecha_nac.month, fecha_nac.day))
+            return self.edad
+        return None
+    
+    def completar_datos_personales(self, fecha_nac: str, sexo: str, autoidentificacion: str):
+        """Completa datos personales básicos"""
+        self.fecha_nacimiento = fecha_nac
+        self.sexo = sexo.upper()
+        self.genero = 'MASCULINO' if sexo.upper() == 'HOMBRE' else 'FEMENINO'
+        self.autoidentificacion = autoidentificacion.upper()
+        self.calcular_edad()
+    
+    def completar_ubicacion(self, provincia: str, canton: str, parroquia: str, barrio: str, calle: str):
+        """Completa datos de ubicación"""
+        self.provincia_reside = provincia
+        self.canton_reside = canton
+        self.parroquia_reside = parroquia
+        self.barrio_sector = barrio
+        self.calle_principal = calle
+    
+    def completar_contacto(self, celular: str, correo: str):
+        """Completa datos de contacto"""
+        self.celular = celular
+        self.correo = correo.lower()
+    
+    def completar_datos_academicos(self, unidad_educativa: str, tipo_unidad: str, 
+                                   calificacion: float, cuadro_honor: str = 'NO'):
+        """Completa datos académicos"""
+        self.unidad_educativa = unidad_educativa
+        self.tipo_unidad_educativa = tipo_unidad.upper()
+        self.calificacion = calificacion
+        self.cuadro_honor = cuadro_honor.upper()
+        
+        if self.calificacion:
+            self.tipo_poblacion = 'NO ESCOLARES'
+        else:
+            self.tipo_poblacion = 'ESCOLARES'
+    
+    def registrar_discapacidad(self, carnet: str, tipo: str, porcentaje: int):
+        """Registra información de discapacidad"""
+        self.carnet_discapacidad = carnet
+        self.tipo_discapacidad = tipo.upper()
+        self.porcentaje_discapacidad = porcentaje
+        print(f" ✓ Discapacidad registrada: {tipo} ({porcentaje}%)")
+    
+    def asignar_persona_apoyo(self, identificacion: str, nombres: str, correo: str):
+        """Asigna persona de apoyo para postulantes con discapacidad"""
+        self.identificacion_apoyo = identificacion
+        self.nombres_apoyo = nombres
+        self.correo_apoyo = correo
+        print(f" ✓ Persona de apoyo: {nombres}")
+    
+    # IMPLEMENTACIÓN del método abstracto de Validable (POLIMORFISMO)
+    def validar_completitud(self) -> bool:
+        """
+        Implementa el método abstracto de la interfaz Validable
+        Valida que el registro esté completo
+        """
+        if not all([self.nombres, self.apellidos, self.identificacion]):
+            self.estado = 'INCOMPLETO'
+            self.observacion_estado = "Faltan datos básicos"
+            return False
+        
+        if not all([self.celular, self.correo]):
+            self.estado = 'INCOMPLETO'
+            self.observacion_estado = "Faltan datos de contacto"
+            return False
+        
+        if not self.provincia_reside:
+            self.estado = 'INCOMPLETO'
+            self.observacion_estado = "Falta ubicación"
+            return False
+        
+        if not self.unidad_educativa:
+            self.estado = 'INCOMPLETO'
+            self.observacion_estado = "Faltan datos académicos"
+            return False
+        
+        self.estado = 'COMPLETO'
+        self.estado_registro_nacional = 'HABILITADO'
+        self.observacion_estado = None
+        return True
+    
+    def mostrar_resumen_completo(self):
+        """Muestra resumen completo del registro"""
+        print("\n" + "=" * 80)
+        print(" RESUMEN COMPLETO DEL REGISTRO NACIONAL")
+        print("=" * 80)
+        
+        print("\n  DATOS PERSONALES:")
+        print(f"   Identificación: {self.identificacion} ({self.tipo_documento})")
+        print(f"   Nombres Completos: {self.obtener_nombre_completo()}")
+        print(f"   Fecha de Nacimiento: {self.fecha_nacimiento if self.fecha_nacimiento else 'No registrada'}")
+        print(f"   Edad: {self.edad} años" if self.edad else "   Edad: No calculada")
+        print(f"   Sexo: {self.sexo if self.sexo else 'No registrado'}")
+        print(f"   Autoidentificación: {self.autoidentificacion if self.autoidentificacion else 'No registrada'}")
+        
+        if self.provincia_reside:
+            print("\n  UBICACIÓN:")
+            print(f"   Provincia: {self.provincia_reside}")
+            print(f"   Cantón: {self.canton_reside}")
+            print(f"   Parroquia: {self.parroquia_reside}")
+        
+        if self.celular or self.correo:
+            print("\n  CONTACTO:")
+            if self.celular:
+                print(f"   Celular: {self.celular}")
+            if self.correo:
+                print(f"   Correo: {self.correo}")
+        
+        if self.unidad_educativa:
+            print("\n  DATOS ACADÉMICOS:")
+            print(f"   Unidad Educativa: {self.unidad_educativa}")
+            print(f"   Tipo: {self.tipo_unidad_educativa}")
+            print(f"   Calificación: {self.calificacion}")
+            print(f"   Cuadro de Honor: {self.cuadro_honor}")
+        
+        print("\n  ESTADO DEL REGISTRO:")
+        print(f"   Estado: {self.estado}")
+        print(f"   Habilitación: {self.estado_registro_nacional}")
+        print(f"   Fecha de Registro: {self.fecha_registro_nacional.strftime('%d/%m/%Y %H:%M:%S')}")
+        
+        if self.observacion_estado:
+            print(f"\n     Observación: {self.observacion_estado}")
+        
+        print("=" * 80)
+    
+    def obtener_datos_completos(self) -> dict:
+        """Retorna diccionario con todos los datos"""
+        return {
+            'identificacion': self.identificacion,
+            'nombres': self.nombres,
+            'apellidos': self.apellidos,
+            'nombre_completo': self.obtener_nombre_completo(),
+            'tipo_documento': self.tipo_documento,
+            'fecha_nacimiento': self.fecha_nacimiento,
+            'edad': self.edad,
+            'sexo': self.sexo,
+            'autoidentificacion': self.autoidentificacion,
+            'provincia': self.provincia_reside,
+            'canton': self.canton_reside,
+            'celular': self.celular,
+            'correo': self.correo,
+            'unidad_educativa': self.unidad_educativa,
+            'calificacion': self.calificacion,
+            'cuadro_honor': self.cuadro_honor,
+            'estado': self.estado,
+            'estado_habilitacion': self.estado_registro_nacional,
+            'fecha_registro': self.fecha_registro_nacional.strftime('%d/%m/%Y %H:%M')
+        }
+    
+    @staticmethod
+    def consultar_por_cedula(identificacion: str) -> Optional['RegistroNacional']:
+        """Busca un registro por cédula"""
+        return RegistroNacional._registros_db.get(identificacion)
+    
+    @staticmethod
+    def existe_registro(identificacion: str) -> bool:
+        """Verifica si existe un registro"""
+        return identificacion in RegistroNacional._registros_db
+    
+    @staticmethod
+    def listar_todos_registros():
+        """Lista todos los registros"""
+        if not RegistroNacional._registros_db:
+            print("\n  No hay registros en el sistema")
+            return
+        
+        print("\n" + "=" * 80)
+        print(f" LISTA DE REGISTROS NACIONALES ({len(RegistroNacional._registros_db)} registros)")
+        print("=" * 80)
+        
+        for i, (cedula, registro) in enumerate(RegistroNacional._registros_db.items(), 1):
+            print(f"\n{i}. {registro.obtener_nombre_completo()}")
+            print(f"   Cédula: {cedula}")
+            print(f"   Estado: {registro.estado} | Habilitación: {registro.estado_registro_nacional}")
+        
+        print("\n" + "=" * 80)
+    
+    def __str__(self) -> str:
+        return f"RegistroNacional({self.obtener_nombre_completo()}, CI: {self.identificacion}, Estado: {self.estado})"
+    
+    @classmethod
+    def obtener_total_registros(cls) -> int:
+        """Retorna el total de registros creados"""
+        return cls._contador
 
-        except KeyboardInterrupt:
-            print("\n\nPrograma interrumpido por el usuario")
-            break
-        except Exception as e:
-            print(f"\nError: {str(e)}")
-            print("Por favor, revise los imports y que la carpeta 'models' exista.")
 
-
+# ==================== EJEMPLOS DE USO ====================
 if __name__ == "__main__":
-    main()
+    print("\n" + "=" * 80)
+    print("DEMOSTRACIÓN: PRINCIPIO S (SRP) - SINGLE RESPONSIBILITY PRINCIPLE")
+    print("=" * 80)
+    print("\nVERSIÓN BUENA: RegistroNacional refactorizado")
+    print("\nClases separadas con responsabilidades únicas:")
+    print("  1. DatosPersonales  → Maneja datos personales básicos")
+    print("  2. Validable        → Define contrato de validación")
+    print("  3. RegistroNacional → Coordina el registro completo")
+    print("=" * 80)
+    
+    # Ejemplo 1: Registro completo
+    print("\n\n📝 EJEMPLO 1: Registro Completo")
+    print("-" * 80)
+    
+    registro1 = RegistroNacional(
+        identificacion="1316202082",
+        nombres="JEAN PIERRE",
+        apellidos="FLORES PILOSO"
+    )
+    registro1.completar_datos_personales("2007-05-15", "HOMBRE", "MESTIZO")
+    registro1.completar_ubicacion("MANABI", "MANTA", "MANTA", "LOS ESTEROS", "AV. 24 DE MAYO")
+    registro1.completar_contacto("0999999999", "florespilosojeanpierre@gmail.com")
+    registro1.completar_datos_academicos("U.E. MANTA", "FISCAL", 9.5, "SI")
+    
+    if registro1.validar_completitud():
+        print("\n✅ Registro validado exitosamente")
+        registro1.mostrar_resumen_completo()
+    
+    # Ejemplo 2: Registro incompleto
+    print("\n\n📝 EJEMPLO 2: Registro Incompleto")
+    print("-" * 80)
+    
+    registro2 = RegistroNacional(
+        identificacion="1234567890",
+        nombres="MARÍA",
+        apellidos="GARCÍA"
+    )
+    registro2.completar_datos_personales("2006-08-22", "MUJER", "MESTIZO")
+    
+    if not registro2.validar_completitud():
+        print(f"\n❌ Registro incompleto: {registro2.observacion_estado}")
